@@ -10,6 +10,8 @@ export default {
   theme: {
   	extend: {
   		colors: {
+			BakerLabBackground: '#103140FF',
+			BakerLabButton: '#FFC000FF',			
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
