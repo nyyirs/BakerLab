@@ -37,6 +37,7 @@ model User {
   role          Role      @default(USER)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  isAdmin       Boolean   @default(false)
   conversations Conversation[]
   requestedTickets Ticket[] @relation("requestedTickets")
   assignedTickets  Ticket[] @relation("assignedTickets")

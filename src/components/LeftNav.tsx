@@ -1,6 +1,6 @@
 "use client"
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Home, File, LibraryBig, Users2, LineChart, HelpCircle, Settings } from 'lucide-react'
@@ -8,6 +8,7 @@ import Image from 'next/image'
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { getSession } from "@/lib/getSession"
 
 interface NavItemProps {
   href: string
@@ -37,6 +38,15 @@ const NavItem = ({ href, icon, children, disabled = false, isActive = false }: N
 
 const LeftNav = () => {
   const pathname = usePathname()
+  const [isAdmin, setIsAdmin] = useState(false)
+
+  useEffect(() => {
+    const checkAdmin = async () => {
+      const session = await getSession()
+      setIsAdmin(session?.user.role === 'ADMIN' || false)
+    }
+    checkAdmin()
+  }, [])
 
   return (
     <div className="flex flex-col h-full bg-BakerLabBackground text-white">
@@ -49,15 +59,14 @@ const LeftNav = () => {
       <ScrollArea className="flex-grow px-3">
         <div className="space-y-1">
           <NavItem href="/main" icon={<Home className="h-5 w-5" />} isActive={pathname === '/main'}>Accueil</NavItem>
-          <NavItem href="" icon={<File className="h-5 w-5" />} disabled>Documents</NavItem>
-          <NavItem href="" icon={<LibraryBig className="h-5 w-5" />} disabled>Modèles IA</NavItem>
-          <NavItem href="" icon={<LineChart className="h-5 w-5" />} disabled>Statistiques</NavItem>
+          <NavItem href="/models" icon={<LibraryBig className="h-5 w-5" />} disabled={!isAdmin}>Modèles IA</NavItem>
+          <NavItem href="/stats" icon={<LineChart className="h-5 w-5" />} disabled={!isAdmin}>Statistiques</NavItem>
         </div>
       </ScrollArea>
 
       <div className="mt-auto px-3 space-y-1">
-        <NavItem href="" icon={<HelpCircle className="h-5 w-5" />} disabled>Assistance</NavItem>
-        <NavItem href="" icon={<Settings className="h-5 w-5" />} disabled>Paramètres</NavItem>
+        <NavItem href="/help" icon={<HelpCircle className="h-5 w-5" />} disabled={!isAdmin}>Assistance</NavItem>
+        <NavItem href={isAdmin ? "/settings" : ""} icon={<Settings className="h-5 w-5" />} disabled={!isAdmin}>Paramètres</NavItem>
       </div>
 
       <div className="flex items-center justify-center py-4 text-xs text-muted-foreground">

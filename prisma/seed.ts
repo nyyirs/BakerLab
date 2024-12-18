@@ -14,6 +14,7 @@ async function main() {
       email: 'admin@bakerlab.com',
       password: hashedPassword,
       role: Role.ADMIN,
+      isAdmin: true
     },
   })
 

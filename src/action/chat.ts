@@ -83,7 +83,7 @@ export async function getConversation(id: string) {
   }
 
   const conversation = await prisma.conversation.findUnique({
-    where: user.isAdmin ? { id } : {id, userId: user.id},
+    where: user.role === 'ADMIN' ? { id } : {id, userId: user.id},
     include: { chats: true },
   })
 
