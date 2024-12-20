@@ -64,17 +64,8 @@ const CardSection = ({userData}:{userData: string}) => {
 
   return (
     <>
-      <Card className="col-span-full" x-chunk="dashboard-05-chunk-0">
-        <CardHeader className="pb-3">
-          <CardTitle>Bienvenue {userData.split("@")[0].toUpperCase()} dans votre Hub Assistant IA</CardTitle>
-          <CardDescription className="text-balance w-full leading-relaxed">
-            Accédez facilement à des outils d’Intelligence Artificielle conçus spécifiquement pour simplifier votre quotidien.
-          </CardDescription>
-        </CardHeader>
-        <CardFooter>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-BakerLabButton">Créer un nouveau contenu</Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
@@ -133,8 +124,6 @@ const CardSection = ({userData}:{userData: string}) => {
             </div>
           </DialogContent>
         </Dialog>
-      </CardFooter>
-      </Card>
 
       {[
         { icon: FileText, title: "Rédiger un article de blog", model: "Modèle simple", disabled: false, description: "Obtenez un article structuré et pertinent adapté à votre audience." },
