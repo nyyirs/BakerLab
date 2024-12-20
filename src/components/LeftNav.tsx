@@ -65,7 +65,7 @@ const LeftNav = () => {
       </ScrollArea>
 
       <div className="mt-auto px-3 space-y-1">
-        <NavItem href="/help" icon={<HelpCircle className="h-5 w-5" />} disabled={!isAdmin}>Assistance</NavItem>
+        <NavItem href="/contact" icon={<HelpCircle className="h-5 w-5" />} disabled={!isAdmin}>Assistance</NavItem>
         <NavItem href={isAdmin ? "/settings" : ""} icon={<Settings className="h-5 w-5" />} disabled={!isAdmin}>Paramètres</NavItem>
       </div>
 

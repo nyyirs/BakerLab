@@ -57,9 +57,7 @@ const CardSection = ({userData}:{userData: string}) => {
   }
 
   const handleCardClick = (index: number) => {
-    if (index === 0) {
       setOpen(true)
-    }
   }
 
   return (
