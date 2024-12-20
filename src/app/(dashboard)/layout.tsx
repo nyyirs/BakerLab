@@ -1,6 +1,7 @@
 import LeftNav from "@/components/LeftNav";
 import TopNav from "@/components/TopNav";
 import { getSession } from "@/lib/getSession";
+import { SessionProvider } from "next-auth/react";
 
 export default async function DashboardLayout({
   children,
@@ -22,7 +23,9 @@ export default async function DashboardLayout({
                 <TopNav userRole={user?.role ?? ""} />
                 <div className="flex-1 overflow-auto p-4">
                     <div className="max-w-[1600px] mx-auto w-full h-full">
-                        {children}
+                        <SessionProvider>   
+                            {children}
+                        </SessionProvider>
                     </div>
                 </div>
             </div>

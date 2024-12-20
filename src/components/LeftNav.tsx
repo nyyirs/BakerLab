@@ -59,13 +59,13 @@ const LeftNav = () => {
       <ScrollArea className="flex-grow px-3">
         <div className="space-y-1">
           <NavItem href="/main" icon={<Home className="h-5 w-5" />} isActive={pathname === '/main'}>Accueil</NavItem>
-          <NavItem href="/model" icon={<LibraryBig className="h-5 w-5" />} disabled={!isAdmin}>Modèles IA</NavItem>
-          <NavItem href="/stats" icon={<LineChart className="h-5 w-5" />} disabled={!isAdmin}>Statistiques</NavItem>
+          <NavItem href="/model" icon={<LibraryBig className="h-5 w-5" />}>Modèles IA</NavItem>
+          <NavItem href="/ticket" icon={<LineChart className="h-5 w-5" />}>Tickets</NavItem>
         </div>
       </ScrollArea>
 
       <div className="mt-auto px-3 space-y-1">
-        <NavItem href="/contact" icon={<HelpCircle className="h-5 w-5" />} disabled={!isAdmin}>Assistance</NavItem>
+        <NavItem href="/contact" icon={<HelpCircle className="h-5 w-5" />} >Assistance</NavItem>
         <NavItem href={isAdmin ? "/settings" : ""} icon={<Settings className="h-5 w-5" />} disabled={!isAdmin}>Paramètres</NavItem>
       </div>
 
