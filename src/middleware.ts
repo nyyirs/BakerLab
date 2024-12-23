@@ -7,6 +7,11 @@ export default async function middleware(req: NextRequest) {
         const newUrl = new URL("/login", req.nextUrl.origin)
         return Response.redirect(newUrl)
     }
+
+    if (req.nextUrl.pathname === "/settings" && session?.user.role !== "ADMIN") {
+      const newUrl = new URL("/main", req.nextUrl.origin)
+      return Response.redirect(newUrl)
+  }
 }
 
 export const config = {

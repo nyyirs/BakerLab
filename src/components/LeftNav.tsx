@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, File, LibraryBig, Users2, LineChart, HelpCircle, Settings } from 'lucide-react'
+import { Home, File, LibraryBig, Users2, LineChart, HelpCircle, Settings, BarChart } from 'lucide-react'
 import Image from 'next/image'
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -61,6 +61,7 @@ const LeftNav = () => {
           <NavItem href="/main" icon={<Home className="h-5 w-5" />} isActive={pathname === '/main'}>Accueil</NavItem>
           <NavItem href="/model" icon={<LibraryBig className="h-5 w-5" />}>Modèles IA</NavItem>
           <NavItem href="/ticket" icon={<LineChart className="h-5 w-5" />}>Tickets</NavItem>
+          <NavItem href="/statistics" icon={<BarChart className="h-5 w-5" />}>Statistiques</NavItem>
         </div>
       </ScrollArea>
 
