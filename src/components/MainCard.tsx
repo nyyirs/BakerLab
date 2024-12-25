@@ -57,24 +57,22 @@ const CardSection = ({userData}:{userData: string}) => {
   }
 
   const handleCardClick = (index: number) => {
-    if (index === 0) {
       setOpen(true)
-    }
   }
 
   return (
     <>
       <Card className="col-span-full" x-chunk="dashboard-05-chunk-0">
         <CardHeader className="pb-3">
-          <CardTitle>Bienvenue {userData.split("@")[0].toUpperCase()} dans votre Hub IA</CardTitle>
+          <CardTitle>Bienvenue {userData.split("@")[0].toUpperCase()} dans votre Hub Assistant IA</CardTitle>
           <CardDescription className="text-balance w-full leading-relaxed">
-            Vous pourrez utiliser tous les modèles en fonction de vos besoins pour faciliter votre quotidien !
+            Accédez facilement à des outils d’Intelligence Artificielle conçus spécifiquement pour simplifier votre quotidien.
           </CardDescription>
         </CardHeader>
         <CardFooter>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-IGSButton">Créer un nouveau contenu</Button>
+            <Button className="bg-BakerLabButton">Créer un nouveau contenu</Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
@@ -117,7 +115,7 @@ const CardSection = ({userData}:{userData: string}) => {
                 className="min-h-[150px]"
               />
               <Button
-                className="bg-IGSButton"
+                className="bg-BakerLabButton"
                 onClick={handleSubmit}
                 disabled={isLoading}
               >
@@ -137,18 +135,18 @@ const CardSection = ({userData}:{userData: string}) => {
       </Card>
 
       {[
-        { icon: FileText, title: "Générer du texte", model: "Modèle simple", disabled: false },
-        { icon: Image, title: "Générer des images", model: "Modèle simple", disabled: true },
+        { icon: FileText, title: "Rédiger un article de blog", model: "Modèle simple", disabled: false, description: "Obtenez un article structuré et pertinent adapté à votre audience." },
+        { icon: Image, title: "Créer un post LinkedIn", model: "Modèle simple", disabled: false, description: "Générez un post engageant et professionnel prêt à publier." },
         { icon: Languages, title: "Traduction par IA", model: "Modèle avancé", disabled: true },
       ].map((feature, index) => (
       <Card
         key={index}
-        className={`transition-all duration-300 ease-in-out ${feature.disabled ? 'opacity-50 cursor-not-allowed' : 'hover:border-pink-500 hover:cursor-pointer'}`}
+        className={`transition-all duration-300 ease-in-out ${feature.disabled ? 'opacity-50 cursor-not-allowed' : 'hover:border-BakerLabButton hover:cursor-pointer'}`}
         onClick={() => handleCardClick(index)}
       >
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <feature.icon className={`w-6 h-6 ${feature.disabled ? 'text-gray-400' : 'text-pink-500'}`} />
+            <feature.icon className={`w-6 h-6 ${feature.disabled ? 'text-gray-400' : 'text-BakerLabButton'}`} />
             <span>{feature.title}</span>
           </CardTitle>
         </CardHeader>
@@ -156,7 +154,7 @@ const CardSection = ({userData}:{userData: string}) => {
           <p className="text-sm text-muted-foreground">{feature.model}</p>
           <h3 className="mt-2 font-semibold text-xl">{feature.title}</h3>
           <p className="mt-2 text-sm">
-            {feature.disabled ? 'Cette fonctionnalité est actuellement indisponible.' : 'Vous avez besoin de générer du texte pour vos emails, vos réseaux sociaux dans la tonalité de votre marque.'}
+            {feature.disabled ? 'Cette fonctionnalité est actuellement indisponible.' : feature.description || 'Vous avez besoin de générer du texte pour vos emails, vos réseaux sociaux dans la tonalité de votre marque.'}
           </p>
         </CardContent>
       </Card>

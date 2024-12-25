@@ -3,13 +3,87 @@
 import { getSession } from "@/lib/getSession";
 import { prisma } from "@/lib/prisma";
 import OpenAI from 'openai';
-
-
 import { revalidatePath } from 'next/cache';
+import crypto from 'crypto';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 })
+
+const requestCache = new Map();
+
+export async function initiateAIResponse(conversationId: string, userMessage: string) {
+  const session = await getSession();
+  if (!session?.user?.email) throw new Error("Authentication required");
+
+  const user = await getUser(session.user.email);
+  const conversation = await getConversationByUserId(conversationId, user.id);
+  const { systemMessage, model } = getSystemMessageAndModel(conversation);
+
+  const requestHash = crypto.createHash('md5')
+    .update(`${conversationId}-${Date.now()}`)
+    .digest('hex');
+
+  processRequestInBackground(requestHash, {
+    conversationId,
+    userMessage,
+    systemMessage,
+    model,
+    messages: conversation.chats
+  });
+
+  return { requestHash };
+}
+
+async function processRequestInBackground(
+  requestHash: string,
+  { conversationId, userMessage, systemMessage, model, messages }: any
+) {
+  try {
+    const response = await openai.chat.completions.create({
+      model,
+      messages: [
+        { role: "system", content: systemMessage },
+        ...messages.map((chat: { role: string; content: string }) => ({
+          role: chat.role,
+          content: chat.content,
+        })),
+        { role: "user", content: userMessage },
+      ],
+    });
+
+    const aiMessage = response.choices[0].message.content;
+
+    await addMessageToConversation(conversationId, 'user', userMessage);
+    await addMessageToConversation(conversationId, 'assistant', aiMessage as string);
+
+    requestCache.set(requestHash, {
+      status: 'completed',
+      response: aiMessage
+    });
+  } catch (error) {
+    requestCache.set(requestHash, {
+      status: 'failed'
+    });
+  }
+}
+
+export async function checkResponseStatus(requestHash: string) {
+  const result = requestCache.get(requestHash);
+  if (!result) return { status: 'pending' };
+
+  if (result.status === 'completed') {
+    requestCache.delete(requestHash);
+    return { status: 'completed', response: result.response };
+  }
+
+  if (result.status === 'failed') {
+    requestCache.delete(requestHash);
+    return { status: 'failed', error: result.error };
+  }
+
+  return { status: 'pending' };
+}
 
 export async function createConversation(title: string, organisation: string, platform: string) {
   const session = await getSession();
