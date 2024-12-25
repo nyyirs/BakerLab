@@ -29,30 +29,45 @@ const CardSection = ({userData}:{userData: string}) => {
     if (isLoading) return;
     setIsLoading(true);
     try {
-      // Create a new conversation using the form data
-      const newConversation = await createConversation(
+      // Add timeouts to prevent 504 errors
+      const timeoutDuration = 30000; // 30 seconds
+
+      // Create conversation with timeout
+      const conversationPromise = createConversation(
         comment.trim().split(' ').slice(0, 3).join(' '),
         organisation,
         platform
       );
+      const newConversation = await Promise.race([
+        conversationPromise,
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Conversation creation timed out')), timeoutDuration)
+        )
+      ]);
 
       if (newConversation && newConversation.id) {
-        // Generate an AI response (this will also add the user's message)
-        await generateAIResponse(newConversation.id, comment);
+        // Generate AI response with timeout
+        const aiResponsePromise = generateAIResponse(newConversation.id, comment);
+        await Promise.race([
+          aiResponsePromise,
+          new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('AI response generation timed out')), timeoutDuration)
+          )
+        ]);
 
-        // Close the dialog
         setOpen(false);
-
-        // Navigate to the new chat
         router.push(`/chat/${newConversation.id}`);
       } else {
         console.error("Failed to create conversation: No ID returned");
         setIsLoading(false);
       }
     } catch (error) {
-      console.error("Error creating conversation:", error);
+      console.error("Error in conversation flow:", error);
       setIsLoading(false);
-      // You may want to show an error message to the user here
+      // Handle timeout errors specifically
+      if (error instanceof Error && error.message.includes('timed out')) {
+        console.error("Request timed out - please try again");
+      }
     }
   }
 
