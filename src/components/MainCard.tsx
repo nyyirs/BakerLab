@@ -30,7 +30,7 @@ const CardSection = ({userData}:{userData: string}) => {
     setIsLoading(true);
     try {
       // Add timeouts to prevent 504 errors
-      const timeoutDuration = 30000; // 30 seconds
+      const timeoutDuration = 60000; // 30 seconds
 
       // Create conversation with timeout
       const conversationPromise = createConversation(
