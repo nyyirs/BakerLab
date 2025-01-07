@@ -17,10 +17,8 @@ export default function UsersSettings() {
     return <div className="flex flex-col gap-2">
         <Card>
             <CardHeader>
-                <CardTitle>Settings</CardTitle>
-                <CardDescription>
-                    Gestion des utilisateurs
-                </CardDescription>
+                <CardTitle>Gestion des utilisateurs</CardTitle>
+                <CardDescription>Ajouter ou enlever des utilisateurs</CardDescription>
             </CardHeader>
             <CardFooter>
                 <Button

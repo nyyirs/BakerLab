@@ -16,6 +16,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { FileText, Image, Languages, Loader2 } from "lucide-react"
 import { useRouter } from 'next/navigation'
 import { useState } from "react"
+import Link from "next/link"
 
 const CardSection = ({userData}:{userData: string}) => {
   const router = useRouter()
@@ -70,9 +71,11 @@ const CardSection = ({userData}:{userData: string}) => {
           </CardDescription>
         </CardHeader>
         <CardFooter>
+        <Link href="/model">
+          <Button className="bg-BakerLabButton">Naviguer sur les différents modèles</Button>
+        </Link>          
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-BakerLabButton">Créer un nouveau contenu</Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>

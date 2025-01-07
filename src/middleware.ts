@@ -9,7 +9,7 @@ export default async function middleware(req: NextRequest) {
     }
 
     if (req.nextUrl.pathname === "/settings" && session?.user.role !== "ADMIN") {
-      const newUrl = new URL("/main", req.nextUrl.origin)
+      const newUrl = new URL("/accueil", req.nextUrl.origin)
       return Response.redirect(newUrl)
   }
 }

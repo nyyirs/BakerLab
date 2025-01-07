@@ -52,7 +52,7 @@ export function TicketsTable({ tickets, currentUserId, userRole }: TicketsTableP
         <Tabs defaultValue="ALL" onValueChange={(value) => setStatus(value as Status | 'ALL')}>
           <TabsList>
             <TabsTrigger value="ALL">Tous</TabsTrigger>
-            <TabsTrigger value={Status.OPEN}>Ouverts</TabsTrigger>
+            <TabsTrigger value={Status.OPEN}>Soumis</TabsTrigger>
             <TabsTrigger value={Status.IN_PROGRESS}>En cours</TabsTrigger>
             <TabsTrigger value={Status.CLOSED}>Résolus</TabsTrigger>
           </TabsList>

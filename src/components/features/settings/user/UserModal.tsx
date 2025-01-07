@@ -74,7 +74,13 @@ export function UserModal({
                 </div>
                 <div className="w-full px-1">
                     <div className="text-md mb-2 text-tertiary">Rôle</div>
-                    <Select value={selectedRole} onValueChange={(value) => setSelectedRole(value)}>
+                    <Select 
+                        value={selectedRole} 
+                        onValueChange={(value) => {
+                            setSelectedRole(value);
+                            setIsAdmin(value === 'ADMIN');
+                        }}
+                    >
                         <SelectTrigger>
                             <SelectValue placeholder="Selectionner votre role"/>
                         </SelectTrigger>
@@ -83,15 +89,6 @@ export function UserModal({
                             <SelectItem value='USER'>User</SelectItem>
                         </SelectContent>
                     </Select>
-                </div>
-                <div className="w-full px-1 mt-4 flex items-center">
-                    <Checkbox id="isAdmin" checked={isAdmin} onCheckedChange={(checked) => setIsAdmin(checked === true)}/>
-                    <label
-                        htmlFor="isAdmin"
-                        className="text-sm cursor-pointer ml-2"
-                    >
-                        Administrateur
-                    </label>
                 </div>
                 <Button
                     className="bg-BakerLabButton mt-4"

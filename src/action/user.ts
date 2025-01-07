@@ -13,7 +13,7 @@ export async function login (formData: FormData) {
     try {
       await signIn("credentials", {
         redirect: false,
-        callbackUrl: "/main",
+        callbackUrl: "/accueil",
         email,
         password,
       });
@@ -22,7 +22,7 @@ export async function login (formData: FormData) {
       const someError = error as CredentialsSignin;
       return someError.cause?.err?.toString();
     };
-    redirect("/main");
+    redirect("/accueil");
   }
 
 export async function register(formData: FormData) {

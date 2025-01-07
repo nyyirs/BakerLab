@@ -225,7 +225,7 @@ const RecentChatTable = () => {
             </Table>
             <div className="flex items-center justify-between mt-4">
               <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-700">Rows per page:</span>
+                <span className="text-sm text-gray-700">lignes par page:</span>
                 <Select
                   value={rowsPerPage.toString()}
                   onValueChange={handleRowsPerPageChange}
