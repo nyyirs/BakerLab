@@ -45,7 +45,10 @@ export default async function TicketPage({ params }: { params: { id: string } })
           <div className="flex justify-between items-start">
             <CardTitle className="text-2xl">{ticket.subject}</CardTitle>
             <Badge className={priorityColors[ticket.priority]}>
-              {ticket.priority.toLowerCase()}
+              {ticket.priority === 'LOW' ? 'faible' :
+               ticket.priority === 'NORMAL' ? 'normal' : 
+               ticket.priority === 'URGENT' ? 'urgent' : 
+               ticket.priority}
             </Badge>
           </div>
           <CardDescription>Ticket #{ticket.id.slice(0, 8)}</CardDescription>
@@ -105,7 +108,10 @@ export default async function TicketPage({ params }: { params: { id: string } })
             <FileText className="w-4 h-4 mr-2" />
             <span className="font-semibold mr-2">Statut:</span>
             <Badge className={statusColors[ticket.status]}>
-              {ticket.status.toLowerCase().replace('_', ' ')}
+              {ticket.status === 'OPEN' ? 'ouvert' :
+               ticket.status === 'IN_PROGRESS' ? 'en cours' :
+               ticket.status === 'CLOSED' ? 'fermé' :
+               ticket.status}
             </Badge>
           </div>
           {isAdmin && <UpdateTicketStatus ticketId={ticket.id} currentStatus={ticket.status} />}

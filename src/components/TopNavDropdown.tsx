@@ -42,13 +42,13 @@ const TopNavDropdown = () => {
             </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuLabel>Mon compte</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem disabled={!isAdmin} onSelect={() => isAdmin && (window.location.href = '/settings')}>Gestion des utilisateurs</DropdownMenuItem>
             <DropdownMenuItem onSelect={() => window.location.href = '/contact'}>Assistance</DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onSelect={handleSignOut}>
-          Logout
+            Se déconnecter
         </DropdownMenuItem>
         </DropdownMenuContent>
         </DropdownMenu>    

@@ -88,11 +88,17 @@ export function TicketsTable({ tickets, currentUserId, userRole }: TicketsTableP
                 <TableCell>{ticket.subject}</TableCell>
                 <TableCell>
                   <Badge className={priorityColors[ticket.priority]}>
-                    {ticket.priority.toLowerCase()}
+                    {ticket.priority === 'LOW' && 'Faible'}
+                    {ticket.priority === 'NORMAL' && 'Normal'}
+                    {ticket.priority === 'URGENT' && 'Urgent'}
                   </Badge>
                 </TableCell>
                 {userRole === Role.ADMIN && <TableCell>{ticket.requestedBy.email}</TableCell>}
-                <TableCell>{ticket.status}</TableCell>
+                <TableCell>
+                  {ticket.status === 'OPEN' && 'Soumis'}
+                  {ticket.status === 'IN_PROGRESS' && 'En cours'} 
+                  {ticket.status === 'CLOSED' && 'Résolu'}
+                </TableCell>
                 <TableCell>{ticket.assignedTo?.email ?? '-'}</TableCell>
               </TableRow>
             ))}

@@ -18,7 +18,7 @@ export default function UsersSettings() {
         <Card>
             <CardHeader>
                 <CardTitle>Gestion des utilisateurs</CardTitle>
-                <CardDescription>Ajouter ou enlever des utilisateurs</CardDescription>
+                <CardDescription>Ajouter ou enlever des utilisateurs.</CardDescription>
             </CardHeader>
             <CardFooter>
                 <Button

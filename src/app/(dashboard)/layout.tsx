@@ -14,7 +14,7 @@ export default async function DashboardLayout({
     return (
         <div className="h-screen flex">
             {/* LEFT */}
-            <div className="w-16 md:w-56 bg-IGSBackground flex-shrink-0">
+            <div className="w-16 md:w-60 bg-IGSBackground flex-shrink-0">
                 <LeftNav />
             </div>
 

@@ -130,7 +130,7 @@ const UserTable = () => {
             </Table>
             <div className="flex items-center justify-between mt-4">
               <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-700">Rows per page:</span>
+                <span className="text-sm text-gray-700">Lignes par page :</span>
                 <Select
                   value={rowsPerPage.toString()}
                   onValueChange={handleRowsPerPageChange}
@@ -156,7 +156,7 @@ const UserTable = () => {
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
                 <span className="text-sm text-gray-700">
-                  Page {currentPage} of {totalPages}
+                  Page {currentPage} sur {totalPages}
                 </span>
                 <Button
                   variant="outline"

@@ -40,7 +40,7 @@ export default function TicketsPage() {
     <div className="container py-10">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Mes Tickets</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Mes tickets</h1>
           <p className="text-muted-foreground">
             Vous constatez une anomalie ou un bug ? Envoyez un ticket et notre équipe s&apos;en chargera au plus vite.
           </p>

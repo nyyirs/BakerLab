@@ -14,7 +14,7 @@ const ContactPage = () => {
             <div className="max-w-2xl">
                 <div className="mb-6">
                     <h2 className="text-2xl font-semibold">Nous Contacter</h2>
-                    <p className="text-muted-foreground">Contactez l'équipe BakerLab</p>
+                    <p className="text-muted-foreground">Contactez l'équipe BakerLab.</p>
                 </div>
                 <form>
                     <div className="grid w-full items-center gap-4">

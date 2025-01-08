@@ -62,11 +62,12 @@ const LeftNav = () => {
           <NavItem href="/model" icon={<LibraryBig className="h-5 w-5" />} isActive={pathname === '/model'}>Modèles IA</NavItem>
           <NavItem href="/ticket" icon={<LineChart className="h-5 w-5" />} isActive={pathname === '/ticket'}>Tickets</NavItem>
           <NavItem href="/statistiques" icon={<BarChart className="h-5 w-5" />} isActive={pathname === '/statistiques'}>Statistiques</NavItem>
+          <NavItem href={isAdmin ? "/settings" : ""} icon={<Settings className="h-5 w-5" />} disabled={!isAdmin} isActive={pathname === '/settings'}>Gestion des utilisateurs</NavItem>
         </div>
       </ScrollArea>
 
       <div className="mt-auto px-3 space-y-1">
-        <NavItem href={isAdmin ? "/settings" : ""} icon={<Settings className="h-5 w-5" />} disabled={!isAdmin} isActive={pathname === '/settings'}>Gestion des utilisateurs</NavItem>
+        
         <NavItem href="/contact" icon={<HelpCircle className="h-5 w-5" />} isActive={pathname === '/contact'}>Assistance</NavItem>        
       </div>
 

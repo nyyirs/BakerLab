@@ -82,7 +82,7 @@ export function UserModal({
                         }}
                     >
                         <SelectTrigger>
-                            <SelectValue placeholder="Selectionner votre role"/>
+                            <SelectValue placeholder="Sélectionnez votre rôle"/>
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value='ADMIN'>Admin</SelectItem>

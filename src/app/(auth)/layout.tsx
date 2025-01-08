@@ -32,7 +32,7 @@ export default function AuthLayout({
             <div className="max-w-md">
               <h1 className="text-4xl font-bold text-primary-foreground mb-4 text-center">Hub Assistants IA</h1>                   
               {children}
-              <p className="text-sm text-primary-foreground text-center mt-8">Vous avez un problème de connexion contactez-nous.</p>  
+              <p className="text-sm text-primary-foreground text-center mt-8">Vous avez un problème de connexion, contactez-nous.</p>  
             </div>
           </div>
 
