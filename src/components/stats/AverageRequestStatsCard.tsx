@@ -2,26 +2,25 @@
 
 import { useEffect, useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { getAverageTimeStats } from '@/action/stats'
-import { Loader2, Clock } from 'lucide-react'
+import { getAverageRequestStats } from '@/action/stats'
+import { Loader2, MessageSquare } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts'
 
-type ConversationTime = {
+type ConversationRequests = {
   conversationId: string
   title: string
-  duration: number
-  durationInMinutes: number
+  requestCount: number
 }
 
-type AverageTimeStats = {
+type AverageRequestStats = {
   userId: string
-  conversations: ConversationTime[]
-  averageDurationMs: number
-  averageDurationMinutes: number
+  conversations: ConversationRequests[]
+  totalRequests: number
+  averageRequests: number
 }
 
-export function AverageTimeStatsCard() {
-  const [stats, setStats] = useState<AverageTimeStats | null>(null)
+export function AverageRequestStatsCard() {
+  const [stats, setStats] = useState<AverageRequestStats | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -29,10 +28,10 @@ export function AverageTimeStatsCard() {
     const fetchStats = async () => {
       try {
         setLoading(true)
-        const data = await getAverageTimeStats()
+        const data = await getAverageRequestStats()
         setStats(data)
       } catch (err) {
-        setError('Failed to fetch average time stats')
+        setError('Failed to fetch average request stats')
         console.error(err)
       } finally {
         setLoading(false)
@@ -64,18 +63,22 @@ export function AverageTimeStatsCard() {
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader>
-        <CardTitle>Temps Moyen pour un Résultat Final</CardTitle>
-        <CardDescription>Durée moyenne pour aboutir à un résultat final par conversation</CardDescription>
+        <CardTitle>Nombre Moyen de Requêtes</CardTitle>
+        <CardDescription>Nombre moyen de requêtes par conversation</CardDescription>
       </CardHeader>
       <CardContent className="pt-6">
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Clock className="h-10 w-10 text-primary" />
+              <MessageSquare className="h-10 w-10 text-primary" />
               <div>
-                <p className="text-sm font-medium">Temps Moyen</p>
-                <p className="text-xl font-bold">{stats?.averageDurationMinutes} minutes</p>
+                <p className="text-sm font-medium">Moyenne de Requêtes</p>
+                <p className="text-xl font-bold">{stats?.averageRequests.toFixed(2)}</p>
               </div>
+            </div>
+            <div>
+              <p className="text-sm font-medium">Total des Requêtes</p>
+              <p className="text-lg font-semibold">{stats?.totalRequests}</p>
             </div>
           </div>
 
@@ -87,15 +90,12 @@ export function AverageTimeStatsCard() {
                   tick={false}
                   height={0}
                 />
-                <YAxis 
-                  dataKey="durationInMinutes"
-                  name="Minutes"
-                />
+                <YAxis />
                 <Tooltip />
                 <Bar 
-                  dataKey="durationInMinutes" 
+                  dataKey="requestCount" 
                   fill="#2563eb"
-                  name="Minutes"
+                  name="Requêtes"
                   radius={[4, 4, 0, 0]}
                 >
                   {stats?.conversations.map((entry, index) => (
@@ -132,7 +132,7 @@ export function AverageTimeStatsCard() {
                     <p className="text-sm truncate" style={{maxWidth: '200px'}}>{conv.title}</p>
                   </div>
                   <p className="text-sm font-medium">
-                    {conv.durationInMinutes} minutes
+                    {conv.requestCount} requête{conv.requestCount !== 1 ? 's' : ''}
                   </p>
                 </div>
               ))}

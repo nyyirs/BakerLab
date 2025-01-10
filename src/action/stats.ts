@@ -141,5 +141,91 @@ export async function getAverageTimeStats() {
       throw new Error('Failed to fetch average time stats')
     }
 }
+ 
+export async function getAverageRequestStats() {
+  try {
+    const session = await getSession()
+    if (!session || !session.user || !session.user.id) {
+      throw new Error('User not authenticated')
+    }
+
+    const userId = session.user.id
+
+    const conversations = await prisma.conversation.findMany({
+      where: {
+        userId: userId
+      },
+      include: {
+        chats: {
+          where: {
+            role: 'user' // Assuming 'user' role indicates a user request
+          }
+        }
+      }
+    })
+
+    const requestCounts = conversations.map(conversation => ({
+      conversationId: conversation.id,
+      title: conversation.title,
+      requestCount: conversation.chats.length
+    }))
+
+    const totalRequests = requestCounts.reduce((sum, conv) => sum + conv.requestCount, 0)
+    const averageRequests = totalRequests / conversations.length
+
+    return {
+      userId: userId,
+      conversations: requestCounts,
+      totalRequests: totalRequests,
+      averageRequests: Math.round(averageRequests * 100) / 100
+    }
+  } catch (error) {
+    console.error('Error fetching average request stats:', error)
+    throw new Error('Failed to fetch average request stats')
+  }
+}
   
-  
+export async function getTotalGeneratedContentStats() {
+  try {
+    const session = await getSession()
+    if (!session || !session.user || !session.user.id) {
+      throw new Error('User not authenticated')
+    }
+
+    // Count all assistant messages across all conversations
+    const totalGeneratedContent = await prisma.chat.count({
+      where: {
+        role: 'assistant'
+      }
+    })
+
+    // Get the count of generated content per user
+    const userGeneratedContent = await prisma.user.findMany({
+      include: {
+        conversations: {
+          include: {
+            chats: {
+              where: {
+                role: 'assistant'
+              }
+            }
+          }
+        }
+      }
+    })
+
+    const userStats = userGeneratedContent.map(user => ({
+      userId: user.id,
+      email: user.email,
+      generatedContentCount: user.conversations.reduce((sum, conv) => sum + conv.chats.length, 0)
+    }))
+
+    return {
+      totalGeneratedContent,
+      userStats,
+    }
+  } catch (error) {
+    console.error('Error fetching total generated content stats:', error)
+    throw new Error('Failed to fetch total generated content stats')
+  }
+}

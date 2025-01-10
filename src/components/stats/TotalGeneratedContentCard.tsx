@@ -2,26 +2,23 @@
 
 import { useEffect, useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { getAverageTimeStats } from '@/action/stats'
-import { Loader2, Clock } from 'lucide-react'
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts'
+import { getTotalGeneratedContentStats } from '@/action/stats'
+import { Loader2, FileText } from 'lucide-react'
+import { ResponsiveContainer, RadialBarChart, RadialBar, Cell, Tooltip } from 'recharts'
 
-type ConversationTime = {
-  conversationId: string
-  title: string
-  duration: number
-  durationInMinutes: number
-}
-
-type AverageTimeStats = {
+type UserGeneratedContent = {
   userId: string
-  conversations: ConversationTime[]
-  averageDurationMs: number
-  averageDurationMinutes: number
+  email: string | null
+  generatedContentCount: number
 }
 
-export function AverageTimeStatsCard() {
-  const [stats, setStats] = useState<AverageTimeStats | null>(null)
+type TotalGeneratedContentStats = {
+  totalGeneratedContent: number
+  userStats: UserGeneratedContent[]
+}
+
+export function TotalGeneratedContentCard() {
+  const [stats, setStats] = useState<TotalGeneratedContentStats | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -29,10 +26,10 @@ export function AverageTimeStatsCard() {
     const fetchStats = async () => {
       try {
         setLoading(true)
-        const data = await getAverageTimeStats()
+        const data = await getTotalGeneratedContentStats()
         setStats(data)
       } catch (err) {
-        setError('Failed to fetch average time stats')
+        setError('Failed to fetch total generated content stats')
         console.error(err)
       } finally {
         setLoading(false)
@@ -64,63 +61,61 @@ export function AverageTimeStatsCard() {
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader>
-        <CardTitle>Temps Moyen pour un Résultat Final</CardTitle>
-        <CardDescription>Durée moyenne pour aboutir à un résultat final par conversation</CardDescription>
+        <CardTitle>Contenu Généré Total</CardTitle>
+        <CardDescription>Nombre total de contenus générés pour tous les utilisateurs</CardDescription>
       </CardHeader>
       <CardContent className="pt-6">
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Clock className="h-10 w-10 text-primary" />
+              <FileText className="h-10 w-10 text-primary" />
               <div>
-                <p className="text-sm font-medium">Temps Moyen</p>
-                <p className="text-xl font-bold">{stats?.averageDurationMinutes} minutes</p>
+                <p className="text-sm font-medium">Total Généré</p>
+                <p className="text-xl font-bold">{stats?.totalGeneratedContent}</p>
               </div>
             </div>
           </div>
 
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={stats?.conversations}>
-                <XAxis 
-                  dataKey="title"
-                  tick={false}
-                  height={0}
-                />
-                <YAxis 
-                  dataKey="durationInMinutes"
-                  name="Minutes"
-                />
-                <Tooltip />
-                <Bar 
-                  dataKey="durationInMinutes" 
-                  fill="#2563eb"
-                  name="Minutes"
-                  radius={[4, 4, 0, 0]}
+              <RadialBarChart 
+                innerRadius="30%" 
+                outerRadius="100%" 
+                data={stats?.userStats} 
+                startAngle={0} 
+                endAngle={360}
+              >
+                <RadialBar
+                  minAngle={15}
+                  background
+                  clockWise={true}
+                  dataKey="generatedContentCount"
+                  label={{ fill: '#666', position: 'insideStart' }}
                 >
-                  {stats?.conversations.map((entry, index) => (
+                  {stats?.userStats.map((entry, index) => (
                     <Cell 
-                      key={`cell-${index}`} 
+                      key={`cell-${index}`}
                       fill={[
                         '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', 
                         '#FFEEAD', '#D4A5A5', '#9B59B6', '#3498DB',
                         '#E74C3C', '#2ECC71', '#F1C40F', '#1ABC9C'
-                      ][index % 12]} 
+                      ][index % 12]}
                     />
                   ))}
-                </Bar>
-              </BarChart>
+                </RadialBar>
+                <Tooltip />
+              </RadialBarChart>
             </ResponsiveContainer>
           </div>
 
           <div className="space-y-2">
-            <p className="font-medium">Détails par Conversation:</p>
+            <p className="font-medium">Détails par Utilisateur:</p>
             <div className="max-h-[200px] overflow-y-auto">
-              {stats?.conversations.map((conv, index) => (
-                <div key={conv.conversationId} className="flex justify-between items-center py-1">
+              {stats?.userStats.map((user, index) => (
+                <div key={user.userId} className="flex justify-between items-center py-1">
                   <div className="flex items-center gap-2">
                     <div 
-                      className="w-3 h-3 rounded-full" 
+                      className="w-3 h-3 rounded-full"
                       style={{
                         backgroundColor: [
                           '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4',
@@ -129,10 +124,12 @@ export function AverageTimeStatsCard() {
                         ][index % 12]
                       }}
                     />
-                    <p className="text-sm truncate" style={{maxWidth: '200px'}}>{conv.title}</p>
+                    <p className="text-sm truncate" style={{maxWidth: '200px'}}>
+                      {user.email || 'Utilisateur sans email'}
+                    </p>
                   </div>
                   <p className="text-sm font-medium">
-                    {conv.durationInMinutes} minutes
+                    {user.generatedContentCount} contenu{user.generatedContentCount !== 1 ? 's' : ''}
                   </p>
                 </div>
               ))}
