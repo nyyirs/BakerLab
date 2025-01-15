@@ -87,8 +87,8 @@ const CardSection = ({userData}:{userData: string}) => {
                   <SelectValue placeholder="Vous souhaitez créer un contenu pour" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="IGENSIA">IGENSIA</SelectItem>
-                  <SelectItem value="ISCPA">ISCPA</SelectItem>
+                  <SelectItem value="Baker Park">Baker Park</SelectItem>
+                  <SelectItem value="Baker Lab ">Baker Lab </SelectItem>
                 </SelectContent>
               </Select>
               <Select onValueChange={(value) => setDropdownPlatform(value)}>
@@ -96,19 +96,10 @@ const CardSection = ({userData}:{userData: string}) => {
                   <SelectValue placeholder="Votre contenu est destiné à" />
                 </SelectTrigger>
                 <SelectContent>
-                  {organisation === "IGENSIA" ? (
-                    <>
-                      <SelectItem value="API">API</SelectItem>
-                      <SelectItem value="LinkedIn">LinkedIn</SelectItem>
-                      <SelectItem value="Facebook">Facebook</SelectItem>
-                    </>
-                  ) : organisation === "ISCPA" ? (
                     <>
                       <SelectItem value="LinkedIn">LinkedIn</SelectItem>
-                      <SelectItem value="Site web">Site web</SelectItem>
-                      <SelectItem value="Fiches metiers">Fiches métiers</SelectItem>
+                      <SelectItem value="Article">Site web</SelectItem>
                     </>
-                  ) : null}
                 </SelectContent>
               </Select>
               <Textarea

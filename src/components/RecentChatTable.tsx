@@ -138,10 +138,10 @@ const RecentChatTable = () => {
               <DropdownMenuLabel>Filter by</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuCheckboxItem checked>
-                IGENSIA
+                Baker Park
               </DropdownMenuCheckboxItem>
               <DropdownMenuCheckboxItem>
-                ISCPA
+                Baker Lab
               </DropdownMenuCheckboxItem>
             </DropdownMenuContent>
           </DropdownMenu>

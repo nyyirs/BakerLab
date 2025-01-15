@@ -31,12 +31,10 @@ export default function MessageList({
     const lines = content.split("\n");
     const paragraphs: Paragraph[] = [];
     const title = brand
-    if(brand === "IGENSIA Alternance") {
-      brand = "igensia";
-    }
+    brand = "bakerpark";
 
     const brandName = brand.toLowerCase().trim().replace(/\s+/g, '-');
-    const response = await fetch(`/brand-logo/${brandName}.jpg`);
+    const response = await fetch(`/brand-logo/${brandName}.png`);
     const imageBuffer = await response.arrayBuffer();
 
     const image = new ImageRun({
