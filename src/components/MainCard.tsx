@@ -17,6 +17,7 @@ import { FileText, Image, Languages, Loader2 } from "lucide-react"
 import { useRouter } from 'next/navigation'
 import { useState } from "react"
 import Link from "next/link"
+import ModelCard from "./ModelCard"
 
 const CardSection = ({userData}:{userData: string}) => {
   const router = useRouter()
@@ -74,86 +75,10 @@ const CardSection = ({userData}:{userData: string}) => {
         <Link href="/model">
           <Button className="bg-BakerLabButton">Naviguer sur les différents modèles</Button>
         </Link>          
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Créer un nouveau contenu</DialogTitle>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <Select onValueChange={(value) => setDropdownOrganisation(value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Vous souhaitez créer un contenu pour" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Baker Park">Baker Park</SelectItem>
-                  <SelectItem value="Baker Lab ">Baker Lab </SelectItem>
-                </SelectContent>
-              </Select>
-              <Select onValueChange={(value) => setDropdownPlatform(value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Votre contenu est destiné à" />
-                </SelectTrigger>
-                <SelectContent>
-                    <>
-                      <SelectItem value="LinkedIn">LinkedIn</SelectItem>
-                      <SelectItem value="Article">Site web</SelectItem>
-                    </>
-                </SelectContent>
-              </Select>
-              <Textarea
-                placeholder="Partagez avec nous une description claire et précise du contenu que vous souhaitez créer."
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                className="min-h-[150px]"
-              />
-              <Button
-                className="bg-BakerLabButton"
-                onClick={handleSubmit}
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Chargement...
-                  </>
-                ) : (
-                  'Soumettre'
-                )}
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
-      </CardFooter>
+        </CardFooter>
       </Card>
-
-      {[
-        { icon: FileText, title: "Rédiger un article de blog", model: "Modèle simple", disabled: false, description: "Obtenez un article structuré et pertinent adapté à votre audience." },
-        { icon: Image, title: "Créer un post LinkedIn", model: "Modèle simple", disabled: false, description: "Générez un post engageant et professionnel prêt à publier." },
-        { icon: Languages, title: "Traduction par IA", model: "Modèle avancé", disabled: true },
-      ].map((feature, index) => (
-      <Card
-        key={index}
-        className={`transition-all duration-300 ease-in-out ${feature.disabled ? 'opacity-50 cursor-not-allowed' : 'hover:border-BakerLabButton hover:cursor-pointer'}`}
-        onClick={() => handleCardClick(index)}
-      >
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <feature.icon className={`w-6 h-6 ${feature.disabled ? 'text-gray-400' : 'text-BakerLabButton'}`} />
-            <span>{feature.title}</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground">{feature.model}</p>
-          <h3 className="mt-2 font-semibold text-xl">{feature.title}</h3>
-          <p className="mt-2 text-sm">
-            {feature.disabled ? 'Cette fonctionnalité est actuellement indisponible.' : feature.description || 'Vous avez besoin de générer du texte pour vos emails, vos réseaux sociaux dans la tonalité de votre marque.'}
-          </p>
-        </CardContent>
-      </Card>
-    ))}
-  </>
+      <ModelCard />
+    </>
   )
 }
 

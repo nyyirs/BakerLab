@@ -17,7 +17,7 @@ import { FileText, Image, Languages, Loader2 } from "lucide-react"
 import { useRouter } from 'next/navigation'
 import { useState } from "react"
 
-const CardSection = ({userData}:{userData: string}) => {
+const CardSection = () => {
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [organisation, setDropdownOrganisation] = useState("")
@@ -57,7 +57,18 @@ const CardSection = ({userData}:{userData: string}) => {
   }
 
   const handleCardClick = (index: number) => {
-      setOpen(true)
+    setOpen(true)
+    switch(index) {
+      case 0: // "Rédiger un article de blog"
+        setDropdownPlatform("Article")
+        break
+      case 1: // "Créer un post LinkedIn"
+        setDropdownPlatform("LinkedIn")
+        break
+      case 2: // "Traduction par IA"
+        setDropdownPlatform("Image")
+        break
+    }
   }
 
   return (
@@ -77,17 +88,6 @@ const CardSection = ({userData}:{userData: string}) => {
                 <SelectContent>
                   <SelectItem value="Baker Park">Baker Park</SelectItem>
                   <SelectItem value="Baker Lab">Baker Lab</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select onValueChange={(value) => setDropdownPlatform(value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Votre contenu est destiné à" />
-                </SelectTrigger>
-                <SelectContent>
-                  <>
-                    <SelectItem value="LinkedIn">LinkedIn</SelectItem>
-                    <SelectItem value="Article">Site web</SelectItem>
-                  </>
                 </SelectContent>
               </Select>
               <Textarea

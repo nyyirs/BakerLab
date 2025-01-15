@@ -18,7 +18,7 @@ const page = async () => {
                   <p className="text-muted-foreground">Sélectionnez le modèle correspondant à votre besoin.</p>
                 </div>
                 <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3">
-                  <ModelCard userData={user.email ?? ''}/>
+                  <ModelCard />
                 </div>
               </div>
           </div>
