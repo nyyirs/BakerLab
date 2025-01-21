@@ -4,20 +4,16 @@ import { createConversation, generateAIResponse } from '@/action/chat'
 import { Button } from "@/components/ui/button"
 import {
   Card,
-  CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
-import { FileText, Image, Languages, Loader2 } from "lucide-react"
+
 import { useRouter } from 'next/navigation'
 import { useState } from "react"
 import Link from "next/link"
-import ModelCard from "./ModelCard"
+import ModelCardSection from "./ModelCardSection"
 
 const CardSection = ({userData}:{userData: string}) => {
   const router = useRouter()
@@ -77,7 +73,7 @@ const CardSection = ({userData}:{userData: string}) => {
         </Link>          
         </CardFooter>
       </Card>
-      <ModelCard />
+      <ModelCardSection />
     </>
   )
 }

@@ -1,6 +1,6 @@
-import ModelCard from '@/components/ModelCard';
 import { getSession } from "@/lib/getSession";
 import { redirect } from "next/navigation";
+import ModelCardSection from "@/components/ModelCardSection";
 
 const page = async () => {
   const session = await getSession();
@@ -18,7 +18,7 @@ const page = async () => {
                   <p className="text-muted-foreground">Sélectionnez le modèle correspondant à votre besoin.</p>
                 </div>
                 <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3">
-                  <ModelCard />
+                  <ModelCardSection />
                 </div>
               </div>
           </div>
