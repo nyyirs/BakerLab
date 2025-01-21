@@ -19,6 +19,9 @@ import { ChevronLeft, ChevronRight, ListFilter, Loader2, Trash2 } from "lucide-r
 import { useRouter } from "next/navigation"
 import { type SetStateAction, useCallback, useEffect, useState } from "react"
 import { ContentCreationDialog } from "./ModelContentCreationDialog"
+import { VideoCreationDialog } from "./ModelVideoCreationDialog"
+import { CVScorerDialog } from "./ModelCVScorerDialog"
+import { OnboardingGuideDialog } from "./ModelOnboardingGuideDialog"
 
 interface ConversationItem {
   id: string
@@ -31,16 +34,20 @@ interface ConversationItem {
 
 const getBadgeColor = (platform: string) => {
   switch (platform.toLowerCase()) {
-    case "api":
-      return "bg-blue-100 text-blue-800"
+    case "article":
+      return "bg-emerald-100 text-emerald-800"
     case "linkedin":
       return "bg-sky-100 text-sky-800"
-    case "facebook":
+    case "poste":
+      return "bg-violet-100 text-violet-800"
+    case "vidéo":
+      return "bg-amber-100 text-amber-800"
+    case "cv":
+      return "bg-rose-100 text-rose-800"
+    case "onboarding":
       return "bg-indigo-100 text-indigo-800"
-    case "site web":
-      return "bg-green-100 text-green-800"
     default:
-      return "bg-gray-100 text-gray-800"
+      return "bg-slate-100 text-slate-800"
   }
 }
 
@@ -52,6 +59,12 @@ const getModelName = (platform: string) => {
       return "Créer un post LinkedIn"
     case "image":
       return "Traduction par IA"
+    case "vidéo":
+      return "Créer une vidéo avatarisée"
+    case "cv":
+      return "Scoreur de CVs"
+    case "onboarding":
+      return "Guide onboarding interactif"
     default:
       return "Modèle inconnu"
   }
@@ -65,6 +78,9 @@ const RecentChatTable = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [selectedPlatform, setSelectedPlatform] = useState("")
   const router = useRouter()
+  const [isVideoDialogOpen, setIsVideoDialogOpen] = useState(false)
+  const [isCVDialogOpen, setIsCVDialogOpen] = useState(false)
+  const [isOnboardingDialogOpen, setIsOnboardingDialogOpen] = useState(false)
 
   useEffect(() => {
     const fetchConversations = async () => {
@@ -96,8 +112,24 @@ const RecentChatTable = () => {
   }
 
   const handleModelClick = (platform: string) => {
-    setSelectedPlatform(platform)
-    setIsDialogOpen(true)
+    switch (platform.toLowerCase()) {
+      case "article":
+      case "linkedin":
+        setSelectedPlatform(platform)
+        setIsDialogOpen(true)
+        break
+      case "vidéo":
+        setIsVideoDialogOpen(true)
+        break
+      case "cv":
+        setIsCVDialogOpen(true)
+        break
+      case "onboarding":
+        setIsOnboardingDialogOpen(true)
+        break
+      default:
+        console.warn(`Unsupported platform: ${platform}`)
+    }
   }
 
   const indexOfLastRow = currentPage * rowsPerPage
@@ -246,6 +278,9 @@ const RecentChatTable = () => {
         </TabsContent>
       </Tabs>
       <ContentCreationDialog open={isDialogOpen} setOpen={setIsDialogOpen} initialPlatform={selectedPlatform} />
+      <VideoCreationDialog open={isVideoDialogOpen} setOpen={setIsVideoDialogOpen} initialPlatform={selectedPlatform} />
+      <CVScorerDialog open={isCVDialogOpen} setOpen={setIsCVDialogOpen} initialPlatform={selectedPlatform} />
+      <OnboardingGuideDialog open={isOnboardingDialogOpen} setOpen={setIsOnboardingDialogOpen} initialPlatform={selectedPlatform} />
     </>
   )
 }
