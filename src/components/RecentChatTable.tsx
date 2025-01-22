@@ -22,6 +22,7 @@ import { ContentCreationDialog } from "./ModelContentCreationDialog"
 import { VideoCreationDialog } from "./ModelVideoCreationDialog"
 import { CVScorerDialog } from "./ModelCVScorerDialog"
 import { OnboardingGuideDialog } from "./ModelOnboardingGuideDialog"
+import { IgensiaDialog } from "./ModelIgensiaDialog"
 
 interface ConversationItem {
   id: string
@@ -54,13 +55,13 @@ const getBadgeColor = (platform: string) => {
 const getModelName = (platform: string) => {
   switch (platform.toLowerCase()) {
     case "article":
-      return "Rédiger un article de blog"
+      return "Rédacteur d’articles de blogs"
     case "linkedin":
-      return "Créer un post LinkedIn"
-    case "image":
-      return "Traduction par IA"
+      return "Rédacteur de posts LinkedIn "
+    case "igensia":
+      return "Formaliseur de fiches de poste"
     case "vidéo":
-      return "Créer une vidéo avatarisée"
+      return "Créateur de vidéos avatarisées"
     case "cv":
       return "Scoreur de CVs"
     case "onboarding":
@@ -77,6 +78,7 @@ const RecentChatTable = () => {
   const [rowsPerPage, setRowsPerPage] = useState(25)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [selectedPlatform, setSelectedPlatform] = useState("")
+  const [isIgensiaDialogOpen, setIsIgensiaDialogOpen] = useState(false)
   const router = useRouter()
   const [isVideoDialogOpen, setIsVideoDialogOpen] = useState(false)
   const [isCVDialogOpen, setIsCVDialogOpen] = useState(false)
@@ -120,6 +122,9 @@ const RecentChatTable = () => {
         break
       case "vidéo":
         setIsVideoDialogOpen(true)
+        break
+      case "igensia":
+        setIsIgensiaDialogOpen(true)
         break
       case "cv":
         setIsCVDialogOpen(true)
@@ -181,8 +186,8 @@ const RecentChatTable = () => {
                     <TableHead className="w-1/6">Titre</TableHead>
                     <TableHead className="hidden sm:table-cell w-1/6">Organisation</TableHead>
                     <TableHead className="hidden sm:table-cell w-1/6">Plateforme</TableHead>
-                    <TableHead className="hidden md:table-cell w-1/6">Créé le</TableHead>
-                    <TableHead className="w-1/6">Model</TableHead>
+                    <TableHead className="w-1/6">Modèle</TableHead>
+                    <TableHead className="hidden md:table-cell w-1/6">Créé le</TableHead>                    
                     <TableHead className="w-1/6"></TableHead>
                   </TableRow>
                 </TableHeader>
@@ -210,9 +215,6 @@ const RecentChatTable = () => {
                           {conversation.platform}
                         </Badge>
                       </TableCell>
-                      <TableCell className="hidden md:table-cell">
-                        {new Date(conversation.createdAt).toLocaleString()}
-                      </TableCell>
                       <TableCell>
                         <div
                           className="cursor-pointer hover:text-IGSButton transition-colors"
@@ -221,6 +223,10 @@ const RecentChatTable = () => {
                           {getModelName(conversation.platform)}
                         </div>
                       </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        {new Date(conversation.createdAt).toLocaleString()}
+                      </TableCell>
+                      
                       <TableCell className="text-right">
                         <Button
                           variant="ghost"
@@ -281,6 +287,7 @@ const RecentChatTable = () => {
       <VideoCreationDialog open={isVideoDialogOpen} setOpen={setIsVideoDialogOpen} initialPlatform={selectedPlatform} />
       <CVScorerDialog open={isCVDialogOpen} setOpen={setIsCVDialogOpen} initialPlatform={selectedPlatform} />
       <OnboardingGuideDialog open={isOnboardingDialogOpen} setOpen={setIsOnboardingDialogOpen} initialPlatform={selectedPlatform} />
+      <IgensiaDialog open={isIgensiaDialogOpen} setOpen={setIsIgensiaDialogOpen} initialPlatform={selectedPlatform} />
     </>
   )
 }

@@ -5,6 +5,7 @@ import { ContentCreationDialog } from "./ModelContentCreationDialog"
 import { VideoCreationDialog } from "./ModelVideoCreationDialog"
 import { CVScorerDialog } from "./ModelCVScorerDialog"
 import { OnboardingGuideDialog } from "./ModelOnboardingGuideDialog"
+import { IgensiaDialog } from "./ModelIgensiaDialog"  
 import { FeatureCards } from "./ModelFeatureCards"
 
 const ModelCardSection = () => {
@@ -12,6 +13,7 @@ const ModelCardSection = () => {
   const [openVideoDialog, setOpenVideoDialog] = useState(false)
   const [openCVDialog, setOpenCVDialog] = useState(false)
   const [openOnboardingDialog, setOpenOnboardingDialog] = useState(false)
+  const [openIgensiaDialog, setOpenIgensiaDialog] = useState(false)
   const [platform, setPlatform] = useState("")
 
   const handleCardClick = (index: number) => {
@@ -25,8 +27,8 @@ const ModelCardSection = () => {
         setOpenContentDialog(true)
         break
       case 2: // "Formaliseur de fiches de poste"
-        setPlatform("Poste")
-        setOpenContentDialog(true)
+        setPlatform("Igensia")
+        setOpenIgensiaDialog(true)    
         break
       case 3: // "Créer une vidéo avatarisée"
         setPlatform("Vidéo")
@@ -49,6 +51,7 @@ const ModelCardSection = () => {
       <VideoCreationDialog open={openVideoDialog} setOpen={setOpenVideoDialog} initialPlatform={platform} />
       <CVScorerDialog open={openCVDialog} setOpen={setOpenCVDialog} initialPlatform={platform} />
       <OnboardingGuideDialog open={openOnboardingDialog} setOpen={setOpenOnboardingDialog} initialPlatform={platform} />
+      <IgensiaDialog open={openIgensiaDialog} setOpen={setOpenIgensiaDialog} initialPlatform={platform} />
       <FeatureCards onCardClick={handleCardClick} />
     </>
   )
