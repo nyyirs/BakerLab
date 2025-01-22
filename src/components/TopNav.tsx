@@ -1,11 +1,11 @@
 "use client"
 
 import * as React from "react"
-import { useState, useMemo } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Search, User } from 'lucide-react'
+import { Search, User } from "lucide-react"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -15,35 +15,75 @@ import {
 } from "../components/ui/breadcrumb"
 import TopNavDropdown from "./TopNavDropdown"
 import { Input } from "../components/ui/input"
+import { getConversation } from "@/action/chat"
+
+const getModelName = (platform: string) => {
+  switch (platform.toLowerCase()) {
+    case "article":
+      return "Rédacteur d'articles de blogs"
+    case "linkedin":
+      return "Rédacteur de posts LinkedIn "
+    case "igensia":
+      return "Formaliseur de fiches de poste"
+    case "vidéo":
+      return "Créateur de vidéos avatarisées"
+    case "cv":
+      return "Scoreur de CVs"
+    case "onboarding":
+      return "Guide onboarding interactif"
+    default:
+      return "Modèle inconnu"
+  }
+}
 
 const TopNav = ({ userRole }: { userRole: string }) => {
-  const [userRoleName, setUserRoleName] = useState(userRole)
   const pathname = usePathname()
+  const [userRoleName] = useState(userRole)
+  const [items, setItems] = useState<Array<{ href: string; label: string }>>([])
 
-  const breadcrumbItems = useMemo(() => {
-    const paths = pathname.split('/').filter(Boolean)
-    return paths.map((path, index) => {
-      const href = `/${paths.slice(0, index + 1).join('/')}`
-      return { href, label: path.charAt(0).toUpperCase() + path.slice(1) }
-    })
+  useEffect(() => {
+    const fetchBreadcrumbItems = async () => {
+      const paths = pathname.split("/").filter(Boolean)
+      const newItems = await Promise.all(
+        paths.map(async (path, index) => {
+          const href = `/${paths.slice(0, index + 1).join("/")}`
+          if (paths[0] === "chat" && index === 1) {
+            try {
+              const conversation = await getConversation(path)
+              return { href, label: getModelName(conversation.platform) }
+            } catch (error) {
+              console.error("Error fetching conversation:", error)
+              return { href, label: path }
+            }
+          }
+          return { href, label: path.charAt(0).toUpperCase() + path.slice(1) }
+        }),
+      )
+      setItems(newItems)
+    }
+
+    fetchBreadcrumbItems()
   }, [pathname])
 
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
       <Breadcrumb className="hidden md:flex">
         <BreadcrumbList>
-          {breadcrumbItems.map((item, index) => (
+          {items.map((item, index) => (
             <React.Fragment key={item.href}>
               <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link href={item.href}>{item.label}</Link>
+                <BreadcrumbLink>
+                  {item.label}
                 </BreadcrumbLink>
               </BreadcrumbItem>
-              <BreadcrumbSeparator />
+              {index < items.length - 1 && <BreadcrumbSeparator />}
             </React.Fragment>
           ))}
+          {items.length > 0 && <BreadcrumbSeparator />}
           <BreadcrumbItem>
-            <BreadcrumbLink href="#">{userRoleName}</BreadcrumbLink>
+            <span className="text-muted-foreground">
+              {userRoleName}
+            </span>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
