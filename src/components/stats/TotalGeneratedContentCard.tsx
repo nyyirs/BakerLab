@@ -110,7 +110,7 @@ export function TotalGeneratedContentCard() {
 
           <div className="w-[500px] space-y-2 my-auto">
             <p className="font-medium">Détails par Utilisateur:</p>
-            <div className="max-h-[200px] overflow-y-auto">
+            <div className="max-h-[200px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
               {stats?.userStats.map((user, index) => (
                 <div key={user.userId} className="flex justify-between items-center py-1">
                   <div className="flex items-center gap-2">

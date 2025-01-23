@@ -116,7 +116,7 @@ export function AverageRequestStatsCard() {
 
             <div className="w-[300px] space-y-2 my-auto">
               <p className="font-medium">Détails par Conversation:</p>
-              <div className="max-h-[300px]">
+              <div className="max-h-[300px] overflow-y-auto">
                 {stats?.conversations.map((conv, index) => (
                   <div key={conv.conversationId} className="flex justify-between items-center py-1">
                     <div className="flex items-center gap-2">
