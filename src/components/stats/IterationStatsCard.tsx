@@ -59,7 +59,7 @@ export function IterationStatsCard() {
   }
 
   return (
-    <Card className="w-full max-w-md mx-auto">
+    <Card className="w-full max-w-3xl mx-auto h-[550px]">
       <CardHeader>
         <CardTitle>Statistiques d'Itérations</CardTitle>
         <CardDescription>Nombre d'itérations avant d'obtenir un résultat final</CardDescription>
@@ -75,7 +75,7 @@ export function IterationStatsCard() {
               </div>
             </div>
           </div>
-
+          <div className="flex gap-12">
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -104,7 +104,7 @@ export function IterationStatsCard() {
             </ResponsiveContainer>
           </div>
 
-          <div className="space-y-2">
+          <div className="w-[700px] space-y-2 my-auto">
             <p className="font-medium">Détails par Conversation:</p>
             {stats?.conversations.map((conv, index) => (
               <div key={conv.conversationId} className="flex justify-between items-center">
@@ -126,6 +126,7 @@ export function IterationStatsCard() {
                 </p>
               </div>
             ))}
+          </div>
           </div>
         </div>
       </CardContent>

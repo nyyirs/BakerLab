@@ -61,7 +61,7 @@ export function AverageRequestStatsCard() {
   }
 
   return (
-    <Card className="w-full max-w-md mx-auto">
+    <Card className="w-full max-w-3xl mx-auto h-[550px]">
       <CardHeader>
         <CardTitle>Nombre Moyen de Requêtes</CardTitle>
         <CardDescription>Nombre moyen de requêtes par conversation</CardDescription>
@@ -82,60 +82,62 @@ export function AverageRequestStatsCard() {
             </div>
           </div>
 
-          <div className="h-[300px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={stats?.conversations}>
-                <XAxis 
-                  dataKey="title"
-                  tick={false}
-                  height={0}
-                />
-                <YAxis />
-                <Tooltip />
-                <Bar 
-                  dataKey="requestCount" 
-                  fill="#2563eb"
-                  name="Requêtes"
-                  radius={[4, 4, 0, 0]}
-                >
-                  {stats?.conversations.map((entry, index) => (
-                    <Cell 
-                      key={`cell-${index}`} 
-                      fill={[
-                        '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', 
-                        '#FFEEAD', '#D4A5A5', '#9B59B6', '#3498DB',
-                        '#E74C3C', '#2ECC71', '#F1C40F', '#1ABC9C'
-                      ][index % 12]} 
-                    />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-
-          <div className="space-y-2">
-            <p className="font-medium">Détails par Conversation:</p>
-            <div className="max-h-[200px] overflow-y-auto">
-              {stats?.conversations.map((conv, index) => (
-                <div key={conv.conversationId} className="flex justify-between items-center py-1">
-                  <div className="flex items-center gap-2">
-                    <div 
-                      className="w-3 h-3 rounded-full" 
-                      style={{
-                        backgroundColor: [
-                          '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4',
+          <div className="flex gap-12">
+            <div className="h-[300px] flex-1">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={stats?.conversations}>
+                  <XAxis 
+                    dataKey="title"
+                    tick={false}
+                    height={0}
+                  />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar 
+                    dataKey="requestCount" 
+                    fill="#2563eb"
+                    name="Requêtes"
+                    radius={[4, 4, 0, 0]}
+                  >
+                    {stats?.conversations.map((entry, index) => (
+                      <Cell 
+                        key={`cell-${index}`} 
+                        fill={[
+                          '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', 
                           '#FFEEAD', '#D4A5A5', '#9B59B6', '#3498DB',
                           '#E74C3C', '#2ECC71', '#F1C40F', '#1ABC9C'
-                        ][index % 12]
-                      }}
-                    />
-                    <p className="text-sm truncate" style={{maxWidth: '200px'}}>{conv.title}</p>
+                        ][index % 12]} 
+                      />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+
+            <div className="w-[300px] space-y-2 my-auto">
+              <p className="font-medium">Détails par Conversation:</p>
+              <div className="max-h-[300px]">
+                {stats?.conversations.map((conv, index) => (
+                  <div key={conv.conversationId} className="flex justify-between items-center py-1">
+                    <div className="flex items-center gap-2">
+                      <div 
+                        className="w-3 h-3 rounded-full" 
+                        style={{
+                          backgroundColor: [
+                            '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4',
+                            '#FFEEAD', '#D4A5A5', '#9B59B6', '#3498DB',
+                            '#E74C3C', '#2ECC71', '#F1C40F', '#1ABC9C'
+                          ][index % 12]
+                        }}
+                      />
+                      <p className="text-sm truncate" style={{maxWidth: '180px'}}>{conv.title}</p>
+                    </div>
+                    <p className="text-sm font-medium">
+                      {conv.requestCount} requête{conv.requestCount !== 1 ? 's' : ''}
+                    </p>
                   </div>
-                  <p className="text-sm font-medium">
-                    {conv.requestCount} requête{conv.requestCount !== 1 ? 's' : ''}
-                  </p>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -143,4 +145,3 @@ export function AverageRequestStatsCard() {
     </Card>
   )
 }
-
