@@ -172,11 +172,11 @@ const RecentChatTable = () => {
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="h-7 gap-1 text-sm">
                   <ListFilter className="h-3.5 w-3.5" />
-                  <span className="sr-only sm:not-sr-only">Filter</span>
+                  <span className="sr-only sm:not-sr-only">filtrer</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Filter by Model</DropdownMenuLabel>
+                <DropdownMenuLabel>Filtrer par modèle</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuCheckboxItem checked={selectedFilter === "all"} onClick={() => handleFilterChange("all")}>
                   Tous
