@@ -59,7 +59,7 @@ export function IterationStatsCard() {
   }
 
   return (
-    <Card className="w-full max-w-md mx-auto">
+    <Card className="w-full max-w-3xl mx-auto h-[550px]">
       <CardHeader>
         <CardTitle>Statistiques d'Itérations</CardTitle>
         <CardDescription>Nombre d'itérations avant d'obtenir un résultat final</CardDescription>
@@ -75,7 +75,7 @@ export function IterationStatsCard() {
               </div>
             </div>
           </div>
-
+          <div className="flex gap-12">
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -104,28 +104,31 @@ export function IterationStatsCard() {
             </ResponsiveContainer>
           </div>
 
-          <div className="space-y-2">
+          <div className="w-[700px] space-y-2 my-auto">
             <p className="font-medium">Détails par Conversation:</p>
-            {stats?.conversations.map((conv, index) => (
-              <div key={conv.conversationId} className="flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                  <div 
-                    className="w-3 h-3 rounded-full" 
-                    style={{
-                      backgroundColor: [
-                        '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4',
-                        '#FFEEAD', '#D4A5A5', '#9B59B6', '#3498DB',
-                        '#E74C3C', '#2ECC71', '#F1C40F', '#1ABC9C'
-                      ][index % 12]
-                    }}
-                  />
-                  <p className="text-sm truncate" style={{maxWidth: '200px'}}>{conv.title}</p>
+            <div className="max-h-[300px] overflow-y-auto">
+              {stats?.conversations.map((conv, index) => (
+                <div key={conv.conversationId} className="flex justify-between items-center py-1">
+                  <div className="flex items-center gap-2">
+                    <div 
+                      className="w-3 h-3 rounded-full" 
+                      style={{
+                        backgroundColor: [
+                          '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4',
+                          '#FFEEAD', '#D4A5A5', '#9B59B6', '#3498DB',
+                          '#E74C3C', '#2ECC71', '#F1C40F', '#1ABC9C'
+                        ][index % 12]
+                      }}
+                    />
+                    <p className="text-sm truncate" style={{maxWidth: '200px'}}>{conv.title}</p>
+                  </div>
+                  <p className="text-sm font-medium">
+                    {conv.iterationCount} itérations
+                  </p>
                 </div>
-                <p className="text-sm font-medium">
-                  {conv.iterationCount} itérations
-                </p>
-              </div>
-            ))}
+              ))}
+            </div>
+          </div>
           </div>
         </div>
       </CardContent>

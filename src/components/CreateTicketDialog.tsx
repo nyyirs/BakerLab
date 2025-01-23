@@ -33,54 +33,54 @@ import * as z from "zod"
 import { Priority, User, Ticket } from "@prisma/client"
 import { createTicket } from "@/action/ticket"
 
-const formSchema = z.object({
-  subject: z.string().min(1, "Le sujet est requis"),
-  description: z.string().min(1, "La description est requise"),
-  priority: z.nativeEnum(Priority),
-  assignedToId: z.string().min(1, "L'assignation est requise"),
-  file: z.any().optional(),
-})
-
 interface CreateTicketDialogProps {
-  adminUsers: User[]
   onTicketCreated: (ticket: Ticket) => void
 }
 
-export function CreateTicketDialog({ adminUsers, onTicketCreated }: CreateTicketDialogProps) {
-  const [open, setOpen] = useState(false)
+export function CreateTicketDialog({ onTicketCreated }: CreateTicketDialogProps) {
   const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
     defaultValues: {
-      subject: '',
-      description: '',
+      subject: "",
+      description: "",
       priority: Priority.NORMAL,
-      assignedToId: '',
       file: undefined,
     },
+  })
+
+  const formSchema = z.object({
+    subject: z.string().min(1, "Le sujet est requis"),
+    description: z.string().min(1, "La description est requise"),
+    priority: z.nativeEnum(Priority),
+    file: z.any().optional(),
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const formData = new FormData()
     Object.entries(values).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
-        if (key === 'file' && value instanceof File) {
+        if (key === "file" && value instanceof File) {
           formData.append(key, value, value.name)
         } else {
           formData.append(key, value as string)
         }
       }
     })
-    
+
+    // Add the default assignedToId
+    formData.append("assignedToId", "cm53u4cs200007ihwfzi9yftr")
+
     try {
       const newTicket = await createTicket(formData)
       onTicketCreated(newTicket)
       setOpen(false)
       form.reset()
     } catch (error) {
-      console.error('Failed to create ticket:', error)
+      console.error("Failed to create ticket:", error)
       // Handle error (e.g., show error message to user)
     }
   }
+
+  const [open, setOpen] = useState(false)
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -143,31 +143,7 @@ export function CreateTicketDialog({ adminUsers, onTicketCreated }: CreateTicket
                   <FormMessage />
                 </FormItem>
               )}
-            />
-            <FormField
-              control={form.control}
-              name="assignedToId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Assigner à</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Sélectionner un administrateur" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {adminUsers.map((user) => (
-                        <SelectItem key={user.id} value={user.id}>
-                          {user.email}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            />            
             <FormField
               control={form.control}
               name="file"

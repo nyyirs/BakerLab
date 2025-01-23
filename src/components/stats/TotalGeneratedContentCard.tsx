@@ -59,7 +59,7 @@ export function TotalGeneratedContentCard() {
   }
 
   return (
-    <Card className="w-full max-w-md mx-auto">
+    <Card className="w-full max-w-3xl mx-auto h-[550px]">
       <CardHeader>
         <CardTitle>Contenu Généré Total</CardTitle>
         <CardDescription>Nombre total de contenus générés pour tous les utilisateurs</CardDescription>
@@ -75,7 +75,7 @@ export function TotalGeneratedContentCard() {
               </div>
             </div>
           </div>
-
+          <div className="flex gap-12">
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <RadialBarChart 
@@ -108,9 +108,9 @@ export function TotalGeneratedContentCard() {
             </ResponsiveContainer>
           </div>
 
-          <div className="space-y-2">
+          <div className="w-[500px] space-y-2 my-auto">
             <p className="font-medium">Détails par Utilisateur:</p>
-            <div className="max-h-[200px] overflow-y-auto">
+            <div className="max-h-[200px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100">
               {stats?.userStats.map((user, index) => (
                 <div key={user.userId} className="flex justify-between items-center py-1">
                   <div className="flex items-center gap-2">
@@ -134,6 +134,7 @@ export function TotalGeneratedContentCard() {
                 </div>
               ))}
             </div>
+          </div>
           </div>
         </div>
       </CardContent>

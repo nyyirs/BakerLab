@@ -95,7 +95,6 @@ const UserTable = () => {
                 <TableRow>
                   <TableHead className="w-1/6">Email</TableHead>
                   <TableHead className="hidden sm:table-cell w-1/6">Role</TableHead>
-                  <TableHead className="w-1/6">Admin</TableHead>
                   <TableHead className="w-1/6"></TableHead>
                 </TableRow>
               </TableHeader>
@@ -108,10 +107,7 @@ const UserTable = () => {
                       </div>
                     </TableCell>
                     <TableCell className="hidden sm:table-cell">
-                      {user.role}
-                    </TableCell>
-                    <TableCell className="hidden sm:table-cell">
-                      {user.isAdmin ? "Yes" : "No"}
+                      {user.role === "ADMIN" ? "Administrateur" : user.role === "USER" ? "Utilisateur" : user.role}
                     </TableCell>
                     <TableCell className="text-right">
                       <Button

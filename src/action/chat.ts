@@ -206,6 +206,77 @@ export async function addMessageToConversation(conversationId: string, role: str
   revalidatePath(`/chat/${conversationId}`)
 }
 
+export async function generateVideoAIResponse(conversationId: string, userMessage: string) {
+  const session = await getSession()
+  if (!session?.user?.email) {
+    throw new Error("You must be logged in to generate an AI response")
+  }
+
+    const fakeResponse =
+    'Voici la vidéo générée avec l\'avatar de Léa pour votre fiche de poste "Alternance - BTS Marketing Digital"'
+
+  try {
+    await addMessageToConversation(conversationId, "user", userMessage)
+    await addMessageToConversation(conversationId, "assistant", fakeResponse)
+
+    return fakeResponse
+  } catch (error) {
+    console.error("Error generating fake AI response:", error)
+    throw new Error("Failed to generate fake AI response")
+  }
+}
+
+export async function generateCVAIResponse(conversationId: string, userMessage: string) {
+  const session = await getSession()
+  if (!session?.user?.email) {
+    throw new Error("You must be logged in to generate an AI response")
+  }
+
+  const fakeResponse = "Profil 1 : Agathe, Responsable Communication avec expérience internationale et gestion de crises\nRésumé :\nExpérience : 7 ans dans la communication, avec une expérience internationale dans une entreprise du secteur technologique. A travaillé dans des environnements multiculturels et a géré des équipes en remote.\nForces :\nGestion de crises réussie : Expérience dans la gestion de crises médiatiques à l'échelle internationale, avec des résultats positifs (réduction des impacts négatifs de 30% lors d'une crise de réputation).\nCommunication internationale : Expertise dans la création de stratégies de communication adaptées à des publics multiculturels, avec une approche localisée selon les marchés.\nLeadership et management d'équipe : A supervisé une équipe de 5 personnes dans la création de contenu et la gestion des campagnes, en utilisant des outils collaboratifs et en mettant en place des formations internes.\nFaiblesses :\nManque de spécialisation dans le secteur B2C : Principalement orienté vers des projets B2B, manque d'expérience directe en communication B2C, ce qui pourrait être un frein dans des contextes de marketing de masse.\nMoins d'expérience avec les petites entreprises ou startups : L'expérience principale est dans des grandes entreprises, et elle pourrait manquer de flexibilité pour travailler dans un environnement startup avec des ressources limitées.\nCompétences en SEO de base : Bien qu'elle utilise Google Analytics, ses compétences en SEO sont encore en développement, ce qui peut être un point faible pour des campagnes de visibilité en ligne.\n\nProfil 2 : Pierre, Responsable Communication digitale et création de contenu\nRésumé :\nExpérience : 5 ans dans des entreprises de marketing digital et de création de contenu, avec une expérience solide en gestion des réseaux sociaux et des campagnes digitales. A travaillé en étroite collaboration avec des influenceurs et des créateurs de contenu.\nForces :\nExpertise en réseaux sociaux et marketing digital : Spécialisé dans la gestion des communautés, l'analyse de performance et la création de contenu viral sur des plateformes comme Instagram, LinkedIn et TikTok.\nCréation de contenu visuel et multimédia : Forte expérience dans la production de visuels, vidéos et autres formats multimédia en utilisant des outils comme Adobe Creative Suite et Canva.\nAdaptabilité aux tendances et à l'innovation : Toujours à l'affût des nouvelles tendances et capable d'intégrer des technologies innovantes, comme l'utilisation de l'IA pour la création de contenu.\nFaiblesses :\nMoins d'expérience en gestion de crises : Bien que très compétent dans la gestion de communautés et de campagnes positives, il n'a pas été exposé à de grandes crises de communication.\nGestion de projets complexe moins développée : Son rôle a surtout été centré sur la création de contenu, et il manque de leadership dans la gestion de projets à grande échelle.\nManque de compétences en communication interne : A tendance à se concentrer sur la communication externe et pourrait être moins à l'aise dans la gestion de la communication interne, en particulier dans une grande entreprise.\n\nProfil 3 : Léa, Responsable Communication stratégique et relations presse\nRésumé :\nExpérience : 10 ans dans la communication stratégique et les relations presse, avec des responsabilités de haut niveau dans la gestion de l'image de marque d'entreprises du secteur de la santé et de l'innovation.\nForces :\nStratégie de communication à long terme : Expertise dans la définition de stratégies de communication sur le long terme, alignées avec les objectifs de l'entreprise et visant à construire une image solide et cohérente.\nExcellentes relations presse : Réseau établi de contacts dans les médias, avec des réussites notables dans la couverture de marque et des articles dans des publications de grande envergure.\nGestion de la réputation de la marque : A supervisé avec succès plusieurs initiatives visant à renforcer la réputation de l'entreprise et à maintenir une image positive auprès des parties prenantes externes et internes.\nFaiblesses :\nManque de compétences en communication digitale : Bien qu'elle ait une forte expérience en communication traditionnelle (presse, événements, relations publiques), elle est moins à l'aise avec les outils digitaux modernes, notamment en ce qui concerne la gestion des réseaux sociaux.\nMoins orientée vers la création de contenu multimédia : Peu de compétences dans la création de contenu visuel et multimédia, ce qui peut être un handicap dans une communication plus visuelle et dynamique.\nGestion de l'engagement des communautés en ligne : A moins d'expérience dans la gestion directe de communautés en ligne et d'interactions sur les plateformes numériques comme les réseaux sociaux ou les forums.\n\nRésumé des profils :\nAgathe est une leader avec une forte expertise en gestion de crise et une expérience internationale, mais elle doit encore développer ses compétences en SEO et s'adapter à des environnements de plus petite taille.\nPierre excelle dans la création de contenu et la gestion des réseaux sociaux, mais manque de leadership en gestion de projet complexe et d'expérience en communication interne.\nLéa est une experte stratégique en relations presse avec une longue expérience dans la gestion de l'image de marque, mais sa compétence limitée en communication digitale pourrait freiner son efficacité dans un monde de plus en plus tourné vers le digital."
+  try {
+    await addMessageToConversation(conversationId, "user", "Results of the CV analysis")
+    await addMessageToConversation(conversationId, "assistant", fakeResponse)
+
+    return fakeResponse
+  } catch (error) {
+    console.error("Error generating fake AI response:", error)
+    throw new Error("Failed to generate fake AI response")
+  }
+}
+
+export async function generateOnboardingAIResponse(conversationId: string, userMessage: string) {
+  const session = await getSession()
+  if (!session?.user?.email) {
+    throw new Error("You must be logged in to generate an AI response")
+  }
+
+  const fakeResponse =
+    'Bien sûr ! Chez nous, nous utilisons PayFit pour la gestion des congés et RTT. Voici comment demander un congé :\n' +
+    'Connectez-vous à PayFit.\n' +
+    'Une fois connecté, allez dans la section "Congés et absences".\n' +
+    'Cliquez sur "Nouvelle demande".\n' +
+    'Sélectionnez le type de congé (Congé payé, RTT, etc.).\n' +
+    'Choisissez les dates souhaitées et ajoutez un commentaire si nécessaire.\n' +
+    'Validez votre demande en cliquant sur "Soumettre".\n' +
+    'Votre manager recevra une notification pour l\'approuver, et vous serez informé une fois que c\'est validé.\n' +
+    'Avez-vous besoin d\'aide supplémentaire ?\n\n' +
+    'Collaborateur : Oui, je voudrais savoir combien de temps j\'ai pour utiliser mes RTT.\n' +
+    'Chatbot : Excellente question ! Les RTT doivent être utilisés avant la fin du mois de mars de l\'année suivante.\n' +
+    'Exemple : Les RTT acquis en 2024 devront être utilisés avant le 31 mars 2025.\n' +
+    'Si vous avez encore des RTT restants, je vous conseille de planifier rapidement vos jours pour éviter de les perdre. Vous pouvez consulter votre solde sur PayFit dans la section "Congés et absences".\n' +
+    'Besoin d\'aide pour une autre question ? 😊'
+
+  try {
+    await addMessageToConversation(conversationId, "user", userMessage)
+    await addMessageToConversation(conversationId, "assistant", fakeResponse)
+
+    return fakeResponse
+  } catch (error) {
+    console.error("Error generating fake AI response:", error)
+    throw new Error("Failed to generate fake AI response")
+  }
+}
+
 export async function generateAIResponse(conversationId: string, userMessage: string) {
   const session = await getSession()
   if (!session?.user?.email) {
@@ -333,6 +404,11 @@ The communication style and content writing should be guided by the following le
 End each article with an open-ended question or an invitation to share thoughts, such as: *“Et vous, quelles initiatives avez-vous déjà mises en place pour intégrer l’IA de manière responsable ?”*`,
         model: "gpt-4o",
       };
+      case 'Igensia':
+        return {
+          systemMessage: `You are an expert job post writer trained to create engaging, dynamic, and inclusive job advertisements that reflect the values and culture of the hiring company. You will be provided with an unstructured and draft job post and your task is to rewrite the finalised version of the job post that adheres to the following tome and writing style guidelines: You should write content in the french language. You should use a warm, engaging, and dynamic tone, avoiding overly formal or institutional language. You should keep the language simple, clear, and inclusive, enabling candidates to easily relate to the job and company culture.  You should avoid writing jargon and overly institutional or formal language.  The job post should be candidate-centric, emphasizing what the company offers in return for the candidate's contributions. The job post should be limited to a concise format of maximum 1500 characters for easy reading. You should not invent any content and your task is limited to only re-writing the provided content. You will be provided information such as the job title, presentation of the hiring company, details of the mission and other details You should rewrite the job post to the following structure: The first line should be the job title as header An introduction paragraph of around 55 words should follow. The introduction should be an engaging and dynamic paragraph summarising the job's key details such as the sector, location and company size. This introductory paragraph should be concise and helps candidates quickly understand if the opportunity matches their expectations. The next section should have as header "Présentation de l'entreprise" and a paragraph of around 90 words description of the hiring company.  The paragraph should offer an authentic glimpse into the company's culture, values, and work environment. The paragraph should maintain a warm and inclusive tone that reflects the company's accessibility and appeal. The next section should have as header "Mission". This section should should have a single line text maintaining the format of the following sample "En tant que Chargé(e) de Projet Marketing en Alternance, tu auras l'opportunité de:".   Around 4-6 consise and structured bullet points should present the main responsibilities of the role.  You should use action verbs and should avoid overly long lists to keep the role approachable for a wide range of candidates. The next section should have as header "Profil recherché". This section should have a captivating sentence followed by the text "Nous recherchons un(e) candidat(e) :". An example of such a sentence would be: "Chez Igensia, nous valorisons l'audace et l'envie de se dépasser. Nous recherchons un(e) candidat(e) :". This section should list around 4-6 structured bullet points the ideal candidate's qualities in an inclusive and motivating way. The bullet points should focus on human qualities and soft skills rather than overly specific technical competencies. The next section should have as header "Avantages et environnement de travail". This section should contain concise and structured bullet points that clearly mention financial and non-financial benefits, such as flexible working conditions, professional growth opportunities, or company perks. The bullet points should highlight elements that make the role and workplace appealing. The final section should include a concluding sentence that encourages the candidate to apply. You can inspire from the sample "Prêt(e) à vivre une expérience inoubliable ? Rejoins-nous chez Igensia et fais partie de notre aventure marketing. Postule dès maintenant pour laisser ton empreinte à Toulouse !"`,
+          model: "gpt-4o",
+        };      
     default:
       throw new Error("Unsupported platform");
   }

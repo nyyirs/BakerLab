@@ -1,14 +1,14 @@
-"use client";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Document, Footer, ImageRun, Packer, Paragraph, TextRun } from "docx";
-import { saveAs } from "file-saver";
-import { ArrowDownToLine, Bot, Copy, User } from "lucide-react";
-import { useEffect, useRef } from "react";
+"use client"
+import { Button } from "@/components/ui/button"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Document, Footer, ImageRun, Packer, Paragraph, TextRun } from "docx"
+import { saveAs } from "file-saver"
+import { ArrowDownToLine, Bot, Copy, User } from "lucide-react"
+import { useEffect, useRef } from "react"
 
 interface Message {
-  role: "user" | "assistant" | "system";
-  content: string;
+  role: "user" | "assistant" | "system"
+  content: string
 }
 
 export default function MessageList({
@@ -16,26 +16,25 @@ export default function MessageList({
   messages,
   isLoading,
 }: {
-  messages: Message[];
-  brand: string;
-  isLoading: boolean;
+  messages: Message[]
+  brand: string
+  isLoading: boolean
 }) {
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  
   const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-  };
-  
-  const downloadAsWord = async (content: string) => {
-    const lines = content.split("\n");
-    const paragraphs: Paragraph[] = [];
-    const title = brand
-    brand = "bakerpark";
+    navigator.clipboard.writeText(text)
+  }
 
-    const brandName = brand.toLowerCase().trim().replace(/\s+/g, '-');
-    const response = await fetch(`/brand-logo/${brandName}.png`);
-    const imageBuffer = await response.arrayBuffer();
+  const downloadAsWord = async (content: string) => {
+    const lines = content.split("\n")
+    const paragraphs: Paragraph[] = []
+    const title = brand
+    brand = "bakerpark"
+
+    const brandName = brand.toLowerCase().trim().replace(/\s+/g, "-")
+    const response = await fetch(`/brand-logo/${brandName}.png`)
+    const imageBuffer = await response.arrayBuffer()
 
     const image = new ImageRun({
       type: "jpg",
@@ -44,40 +43,40 @@ export default function MessageList({
         width: 120,
         height: 64,
       },
-    });
+    })
 
     lines.forEach((line) => {
       if (line.startsWith("**") && line.endsWith("**")) {
-        const titleText = line.replace(/\*\*/g, "");
+        const titleText = line.replace(/\*\*/g, "")
         paragraphs.push(
           new Paragraph({
             children: [new TextRun({ text: titleText, bold: true, font: "Archivo" })],
             spacing: { after: 200 },
-          })
-        );
+          }),
+        )
       } else if (line.startsWith("- ")) {
-        const listItemText = line.replace("- ", "");
+        const listItemText = line.replace("- ", "")
         paragraphs.push(
           new Paragraph({
             children: [new TextRun({ text: listItemText, font: "Archivo" })],
             bullet: { level: 0 },
-          })
-        );
+          }),
+        )
       } else if (line.trim() === "---") {
         paragraphs.push(
           new Paragraph({
             children: [new TextRun({ text: " ", break: 1 })],
-          })
-        );
+          }),
+        )
       } else {
         paragraphs.push(
           new Paragraph({
             children: [new TextRun({ text: line, font: "Archivo" })],
             spacing: { after: 200 },
-          })
-        );
+          }),
+        )
       }
-    });
+    })
 
     const doc = new Document({
       sections: [
@@ -94,42 +93,55 @@ export default function MessageList({
           },
         },
       ],
-    });
+    })
 
-    const blob = await Packer.toBlob(doc);
-    saveAs(blob, `Message ${title}.docx`);
-  };
-
+    const blob = await Packer.toBlob(doc)
+    saveAs(blob, `Message ${title}.docx`)
+  }
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    scrollToBottom()
+  }, [messages])
+
+  const renderMessageContent = (content: string) => {
+    if (
+      content.includes(
+        'Voici la vidéo générée avec l\'avatar de Léa pour votre fiche de poste "Alternance - BTS Marketing Digital"',
+      )
+    ) {
+      const videoId = "1f-EdP9xPZJzI1XG-XEsxI5NZlK3Eg3Xj"
+      return (
+        <>
+          <p className="text-sm whitespace-pre-wrap mb-2">{content}</p>
+          <div className="relative w-full pt-[56.25%]">
+            <iframe
+              src={`https://drive.google.com/file/d/${videoId}/preview`}
+              allow="autoplay"
+              className="absolute top-0 left-0 w-full h-full"
+            ></iframe>
+          </div>
+        </>
+      )
+    }
+    return <p className="text-sm whitespace-pre-wrap">{content}</p>
+  }
 
   return (
     <div className="flex-1 relative">
       <ScrollArea className="absolute inset-0">
         <div className="p-4 space-y-4">
           {messages.map((message, index) => (
-            <div
-              key={index}
-              className={`flex ${
-                message.role === "user" ? "justify-end" : "justify-start"
-              }`}
-            >
+            <div key={index} className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}>
               <div
-                className={`flex items-end max-w-[70%] ${
-                  message.role === "user" ? "flex-row-reverse" : "flex-row"
-                }`}
+                className={`flex items-end max-w-[70%] ${message.role === "user" ? "flex-row-reverse" : "flex-row"}`}
               >
                 <div
                   className={`flex items-center justify-center p-2 w-8 h-8 rounded-full ${
-                    message.role === "user"
-                      ? "bg-IGSButton ml-2"
-                      : "bg-gray-300 mr-2"
+                    message.role === "user" ? "bg-IGSButton ml-2" : "bg-gray-300 mr-2"
                   }`}
                 >
                   {message.role === "user" ? (
@@ -145,9 +157,7 @@ export default function MessageList({
                       : "bg-gray-200 text-gray-800 rounded-bl-none"
                   }`}
                 >
-                  <p className="text-sm whitespace-pre-wrap">
-                    {message.content}
-                  </p>
+                  {renderMessageContent(message.content)}
                   {message.role === "assistant" && (
                     <div className="mt-4">
                       <Button
@@ -162,7 +172,7 @@ export default function MessageList({
                         variant="ghost"
                         size="icon"
                         onClick={() => {
-                          copyToClipboard(message.content);
+                          copyToClipboard(message.content)
                         }}
                         className="h-8 w-8 p-0 ml-auto"
                       >
@@ -192,5 +202,6 @@ export default function MessageList({
         </div>
       </ScrollArea>
     </div>
-  );
+  )
 }
+
