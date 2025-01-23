@@ -55,7 +55,7 @@ const getBadgeColor = (platform: string) => {
 const getModelName = (platform: string) => {
   switch (platform.toLowerCase()) {
     case "article":
-      return "Rédacteur d’articles de blogs"
+      return "Rédacteur d'articles de blogs"
     case "linkedin":
       return "Rédacteur de posts LinkedIn "
     case "igensia":
@@ -83,6 +83,7 @@ const RecentChatTable = () => {
   const [isVideoDialogOpen, setIsVideoDialogOpen] = useState(false)
   const [isCVDialogOpen, setIsCVDialogOpen] = useState(false)
   const [isOnboardingDialogOpen, setIsOnboardingDialogOpen] = useState(false)
+  const [selectedFilter, setSelectedFilter] = useState<string>("all")
 
   useEffect(() => {
     const fetchConversations = async () => {
@@ -137,11 +138,21 @@ const RecentChatTable = () => {
     }
   }
 
+  const handleFilterChange = (platform: string) => {
+    setSelectedFilter(platform)
+    setCurrentPage(1)
+  }
+
+  const filteredConversations = conversations.filter((conversation: ConversationItem) => {
+    if (selectedFilter === "all") return true
+    return conversation.platform.toLowerCase() === selectedFilter.toLowerCase()
+  })
+
   const indexOfLastRow = currentPage * rowsPerPage
   const indexOfFirstRow = indexOfLastRow - rowsPerPage
-  const currentRows = conversations.slice(indexOfFirstRow, indexOfLastRow)
+  const currentRows = filteredConversations.slice(indexOfFirstRow, indexOfLastRow)
 
-  const totalPages = Math.ceil(conversations.length / rowsPerPage)
+  const totalPages = Math.ceil(filteredConversations.length / rowsPerPage)
 
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber)
@@ -165,10 +176,29 @@ const RecentChatTable = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Filter by</DropdownMenuLabel>
+                <DropdownMenuLabel>Filter by Model</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuCheckboxItem checked>Baker Park</DropdownMenuCheckboxItem>
-                <DropdownMenuCheckboxItem>Baker Lab</DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem checked={selectedFilter === "all"} onClick={() => handleFilterChange("all")}>
+                  Tous
+                </DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem checked={selectedFilter === "article"} onClick={() => handleFilterChange("article")}>
+                  Rédacteur d'articles de blogs
+                </DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem checked={selectedFilter === "linkedin"} onClick={() => handleFilterChange("linkedin")}>
+                  Rédacteur de posts LinkedIn
+                </DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem checked={selectedFilter === "vidéo"} onClick={() => handleFilterChange("vidéo")}>
+                  Créateur de vidéos avatarisées
+                </DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem checked={selectedFilter === "igensia"} onClick={() => handleFilterChange("igensia")}>
+                  Formaliseur de fiches de poste
+                </DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem checked={selectedFilter === "cv"} onClick={() => handleFilterChange("cv")}>
+                  Scoreur de CVs
+                </DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem checked={selectedFilter === "onboarding"} onClick={() => handleFilterChange("onboarding")}>
+                  Guide onboarding interactif
+                </DropdownMenuCheckboxItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -293,4 +323,3 @@ const RecentChatTable = () => {
 }
 
 export default RecentChatTable
-
