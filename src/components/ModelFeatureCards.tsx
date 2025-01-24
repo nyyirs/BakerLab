@@ -28,14 +28,14 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ icon: Icon, title, disabled, 
             <CardContent className="flex gap-4 items-center">
               <Icon />
               <div className="flex-1">
-                <span className="text-sm md:text-base lg:text-lg font-bold block">{title}</span>
-                <p className="text-xs md:text-sm lg:text-base leading-relaxed">
+                <span className="text-m font-bold block">{title}</span>
+                <p className="text-m leading-relaxed">
                   {disabled ? "Cette fonctionnalité est actuellement indisponible." : description}
                 </p>
                 {tags && tags.length > 0 && (
                   <div className="absolute mt-2">
                     {tags.map((tag) => (
-                      <Badge key={tag} variant="outline" className="border-white/30 text-white hover:bg-white/10 text-xs md:text-sm">
+                      <Badge key={tag} variant="outline" className="border-white/30 text-white hover:bg-white/10">
                         {tag}
                       </Badge>
                     ))}
