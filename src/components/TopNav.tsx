@@ -56,6 +56,18 @@ const TopNav = ({ userRole }: { userRole: string }) => {
               return { href, label: path }
             }
           }
+          if (path === "settings") {
+            return { href, label: "Gestion des utilisateurs" }
+          }
+          if (path === "ticket") {
+            return { href, label: "Tickets" }
+          }      
+          if (path === "model") {
+            return { href, label: "Modèle" }
+          }     
+          if (path === "chat") {
+            return { href: "/model", label: "Modèle" }
+          }              
           return { href, label: path.charAt(0).toUpperCase() + path.slice(1) }
         }),
       )
@@ -72,7 +84,7 @@ const TopNav = ({ userRole }: { userRole: string }) => {
           {items.map((item, index) => (
             <React.Fragment key={item.href}>
               <BreadcrumbItem>
-                <BreadcrumbLink>
+                <BreadcrumbLink href={item.href}>
                   {item.label}
                 </BreadcrumbLink>
               </BreadcrumbItem>

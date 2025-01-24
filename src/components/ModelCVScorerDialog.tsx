@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input"
 import { Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { createConversation, generateCVAIResponse, generateVideoAIResponse } from "@/action/chat"
+import { createConversation, generateCVAIResponse } from "@/action/chat"
+import FileInputButton from "@/components/ui/file-input-button"
 
 interface CVScorerDialogProps {
   open: boolean
@@ -65,11 +66,11 @@ export const CVScorerDialog: React.FC<CVScorerDialogProps> = ({ open, setOpen, i
         <div className="grid gap-4 py-4">
           <div className="space-y-2">
             <label className="text-sm font-medium">Charger la fiche de poste à analyser</label>
-            <Input type="file" accept=".pdf,.doc,.docx,.txt" onChange={handleFileChange} />
+            <FileInputButton accept=".pdf,.doc,.docx,.txt" onChange={handleFileChange} buttonText="Importer un fichier" />
           </div>
           <div className="space-y-2">
             <label className="text-sm font-medium">Charger les CVs à analyser</label>
-            <Input type="file" accept=".pdf,.doc,.docx,.txt" multiple onChange={handleFileChange} />
+            <FileInputButton accept=".pdf,.doc,.docx,.txt" onChange={handleFileChange} buttonText="Importer un fichier" />
           </div>
           <div className="space-y-2">
             <label className="text-sm font-medium">Saisir les compétences à prioriser (optionnel)</label>

@@ -85,8 +85,8 @@ export function UserModal({
                             <SelectValue placeholder="Sélectionnez votre rôle"/>
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value='ADMIN'>Admin</SelectItem>
-                            <SelectItem value='USER'>User</SelectItem>
+                            <SelectItem value='ADMIN'>Administrateur</SelectItem>
+                            <SelectItem value='USER'>Utilisateur</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>

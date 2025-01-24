@@ -94,7 +94,7 @@ const UserTable = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-1/6">Email</TableHead>
-                  <TableHead className="hidden sm:table-cell w-1/6">Role</TableHead>
+                  <TableHead className="hidden sm:table-cell w-1/6">Rôle</TableHead>
                   <TableHead className="w-1/6"></TableHead>
                 </TableRow>
               </TableHeader>
