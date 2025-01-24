@@ -13,7 +13,7 @@ interface FeatureCardProps {
 
 const FeatureCard: React.FC<FeatureCardProps> = ({ icon: Icon, title, disabled, description, tags = [], onClick }) => (
     <Card
-          className={`relative overflow-hidden transition-all duration-300 ease-in-out h-40 ${
+          className={`relative overflow-hidden transition-all duration-300 ease-in-out h-[140px] ${
             disabled ? "opacity-50 cursor-not-allowed" : "hover:border-primary hover:cursor-pointer"
           }`}
           onClick={disabled ? undefined : onClick}
@@ -24,18 +24,18 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ icon: Icon, title, disabled, 
           </div>
 
           {/* Content */}
-          <div className="relative z-10 text-white pt-4">
+          <div className="relative z-10 text-white mt-4">
             <CardContent className="flex gap-4 items-center">
               <Icon />
               <div className="flex-1">
-                <span className="text-lg font-bold block">{title}</span>
-                <p className="text-lg leading-relaxed">
+                <span className="text-sm md:text-base lg:text-lg font-bold block">{title}</span>
+                <p className="text-xs md:text-sm lg:text-base leading-relaxed">
                   {disabled ? "Cette fonctionnalité est actuellement indisponible." : description}
                 </p>
                 {tags && tags.length > 0 && (
                   <div className="absolute mt-2">
                     {tags.map((tag) => (
-                      <Badge key={tag} variant="outline" className="border-white/30 text-white hover:bg-white/10">
+                      <Badge key={tag} variant="outline" className="border-white/30 text-white hover:bg-white/10 text-xs md:text-sm">
                         {tag}
                       </Badge>
                     ))}
