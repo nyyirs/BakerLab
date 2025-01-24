@@ -66,11 +66,11 @@ export const CVScorerDialog: React.FC<CVScorerDialogProps> = ({ open, setOpen, i
         <div className="grid gap-4 py-4">
           <div className="space-y-2">
             <label className="text-sm font-medium">Charger la fiche de poste à analyser</label>
-            <FileInputButton accept=".pdf,.doc,.docx,.txt" onChange={handleFileChange} buttonText="Importer un fichier" />
+            <FileInputButton accept=".pdf,.doc,.docx,.txt" onChange={handleFileChange} buttonText="Importer un fichier" multiple={false} />
           </div>
           <div className="space-y-2">
             <label className="text-sm font-medium">Charger les CVs à analyser</label>
-            <FileInputButton accept=".pdf,.doc,.docx,.txt" onChange={handleFileChange} buttonText="Importer un fichier" />
+            <FileInputButton accept=".pdf,.doc,.docx,.txt" onChange={handleFileChange} buttonText="Importer un fichier" multiple={true} />
           </div>
           <div className="space-y-2">
             <label className="text-sm font-medium">Saisir les compétences à prioriser (optionnel)</label>

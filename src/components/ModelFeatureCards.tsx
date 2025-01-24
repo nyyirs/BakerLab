@@ -24,12 +24,12 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ icon: Icon, title, disabled, 
           </div>
 
           {/* Content */}
-          <div className="relative z-10 text-white mt-4">
+          <div className="relative z-10 text-white mt-6">
             <CardContent className="flex gap-4 items-center">
               <Icon />
               <div className="flex-1">
-                <span className="text-m font-bold block">{title}</span>
-                <p className="text-m leading-relaxed">
+                <span className="text-sm font-bold block">{title}</span>
+                <p className="text-xs leading-relaxed">
                   {disabled ? "Cette fonctionnalité est actuellement indisponible." : description}
                 </p>
                 {tags && tags.length > 0 && (
