@@ -50,7 +50,7 @@ export const IgensiaDialog: React.FC<IgensiaDialogProps> = ({ open, setOpen, ini
                 setOpen(false);
 
                 // Navigate to the new chat
-                router.push(`/chat-b2b/${newConversation.id}`);
+                router.push(`/chat/${newConversation.id}`);
             } else {
                 console.error("Failed to create conversation: No ID returned");
                 setIsLoading(false);
