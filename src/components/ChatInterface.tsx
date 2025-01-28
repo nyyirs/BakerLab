@@ -1,6 +1,6 @@
 'use client'
 
-import { generateAIResponse } from '@/action/chat'
+import { generateAIResponse, generateOnboardingAIResponse } from '@/action/chat'
 import { useState } from "react"
 import ChatInput from "./ChatInput"
 import MessageList from "./MessageList"
@@ -22,9 +22,17 @@ export default function ChatInterface({ initialMessages, brand, conversationId }
     setMessages(prevMessages => [...prevMessages, newUserMessage])
 
     try {
-      const aiResponse = await generateAIResponse(conversationId, inputMessage)
-      const newAiMessage: Message = { role: "assistant", content: aiResponse as string }
-      setMessages(prevMessages => [...prevMessages, newAiMessage])
+
+      if (initialMessages[0].content === "Bonjour, je voudrais savoir comment demander des congés.") {
+        const aiResponse = await generateOnboardingAIResponse(conversationId, inputMessage)
+        const newAiMessage: Message = { role: "assistant", content: aiResponse as string }
+        setMessages(prevMessages => [...prevMessages, newAiMessage])
+      } else {
+        const aiResponse = await generateAIResponse(conversationId, inputMessage)
+        const newAiMessage: Message = { role: "assistant", content: aiResponse as string }
+        setMessages(prevMessages => [...prevMessages, newAiMessage])
+      }
+
     } catch (error) {
       console.error("Error generating AI response:", error)
       // Handle error (e.g., show error message to user)

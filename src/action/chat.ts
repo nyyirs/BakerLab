@@ -250,30 +250,36 @@ export async function generateOnboardingAIResponse(conversationId: string, userM
     throw new Error("You must be logged in to generate an AI response")
   }
 
-  const fakeResponse =
-    'Bien sûr ! Chez nous, nous utilisons PayFit pour la gestion des congés et RTT. Voici comment demander un congé :\n' +
-    'Connectez-vous à PayFit.\n' +
-    'Une fois connecté, allez dans la section "Congés et absences".\n' +
-    'Cliquez sur "Nouvelle demande".\n' +
-    'Sélectionnez le type de congé (Congé payé, RTT, etc.).\n' +
-    'Choisissez les dates souhaitées et ajoutez un commentaire si nécessaire.\n' +
-    'Validez votre demande en cliquant sur "Soumettre".\n' +
-    'Votre manager recevra une notification pour l\'approuver, et vous serez informé une fois que c\'est validé.\n' +
-    'Avez-vous besoin d\'aide supplémentaire ?\n\n' +
-    'Collaborateur : Oui, je voudrais savoir combien de temps j\'ai pour utiliser mes RTT.\n' +
-    'Chatbot : Excellente question ! Les RTT doivent être utilisés avant la fin du mois de mars de l\'année suivante.\n' +
-    'Exemple : Les RTT acquis en 2024 devront être utilisés avant le 31 mars 2025.\n' +
-    'Si vous avez encore des RTT restants, je vous conseille de planifier rapidement vos jours pour éviter de les perdre. Vous pouvez consulter votre solde sur PayFit dans la section "Congés et absences".\n' +
-    'Besoin d\'aide pour une autre question ? 😊'
+  let response = ''
+
+  // Handle first message about vacation request
+  if (userMessage.toLowerCase().includes('comment demander des congés')) {
+    response = 'Bien sûr ! Chez nous, nous utilisons PayFit pour la gestion des congés et RTT. Voici comment demander un congé :\n' +
+      '1. Connectez-vous à PayFit.\n' +
+      '2. Une fois connecté, allez dans la section "Congés et absences".\n' +
+      '3. Cliquez sur "Nouvelle demande".\n' +
+      '4. Sélectionnez le type de congé (Congé payé, RTT, etc.).\n' +
+      '5. Choisissez les dates souhaitées et ajoutez un commentaire si nécessaire.\n' +
+      '6. Validez votre demande en cliquant sur "Soumettre".\n' +
+      'Votre manager recevra une notification pour l\'approuver, et vous serez informé une fois que c\'est validé.\n' +
+      'Avez-vous besoin d\'aide supplémentaire ?'
+  }
+  // Handle second message about RTT usage deadline
+  else if (userMessage.toLowerCase().includes('combien de temps') && userMessage.toLowerCase().includes('rtt')) {
+    response = 'Excellente question ! Les RTT doivent être utilisés avant la fin du mois de mars de l\'année suivante.\n' +
+      '* Exemple : Les RTT acquis en 2024 devront être utilisés avant le 31 mars 2025.\n' +
+      'Si vous avez encore des RTT restants, je vous conseille de planifier rapidement vos jours pour éviter de les perdre. Vous pouvez consulter votre solde sur PayFit dans la section "Congés et absences".\n' +
+      'Besoin d\'aide pour une autre question ? 😊'
+  }
 
   try {
     await addMessageToConversation(conversationId, "user", userMessage)
-    await addMessageToConversation(conversationId, "assistant", fakeResponse)
+    await addMessageToConversation(conversationId, "assistant", response)
 
-    return fakeResponse
+    return response
   } catch (error) {
-    console.error("Error generating fake AI response:", error)
-    throw new Error("Failed to generate fake AI response")
+    console.error("Error generating AI response:", error)
+    throw new Error("Failed to generate AI response")
   }
 }
 
