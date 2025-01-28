@@ -38,3 +38,41 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# docker volumes
+mysql_data
+
+# Apache
+/apache/logs/
+/apache/logs/*
+*.log
+apache/ssl/
+apache/ssl/*
+
+# System Files
+Thumbs.db
+.directory
+*.tmp
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Certificates
+*.crt
+*.key
+*.pem
+*.csr
+*.srl
