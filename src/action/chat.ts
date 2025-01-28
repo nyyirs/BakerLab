@@ -88,7 +88,7 @@ export async function checkResponseStatus(requestHash: string) {
 export async function createConversation(title: string, organisation: string, platform: string) {
   const session = await getSession();
   if (!session?.user?.email) {
-    throw new Error("You must be logged in to create a conversation")
+    throw new Error("You must be logged in to create a conversation on this platform")
   }
 
   const user = await prisma.user.findUnique({
