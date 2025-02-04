@@ -8,8 +8,11 @@ services:
         - OPENAI_API_KEY=${OPENAI_API_KEY}
     expose:
       - "3000"
-    ports:
-      - "3000:3000"
+    networks:
+      reverse-proxy-net:
+        aliases:
+          - bakerlab-ai-app
+      bakerlab-ai-net:
     env_file:
       - .env
       - .env_db
@@ -28,8 +31,8 @@ services:
     image: mariadb:10.6
     env_file:
       - .env_db
-    ports:
-      - "3306:3306"
+    networks:
+      - bakerlab-ai-net
     expose:
       - "3306"
     volumes:
@@ -41,3 +44,8 @@ services:
 volumes:
   mysql_data-hub-assistance-ai:
     name: igensia_mysql_data-hub-assistance-ai
+
+networks:
+  reverse-proxy-net:
+    external: true
+  bakerlab-ai-net:
