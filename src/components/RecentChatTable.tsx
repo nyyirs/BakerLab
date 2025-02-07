@@ -19,9 +19,9 @@ import { ChevronLeft, ChevronRight, ListFilter, Loader2, Trash2 } from "lucide-r
 import { useRouter } from "next/navigation"
 import { type SetStateAction, useCallback, useEffect, useState } from "react"
 import { ContentCreationDialog } from "./ModelContentCreationDialog"
-import { VideoCreationDialog } from "./ModelVideoCreationDialog"
-import { CVScorerDialog } from "./ModelCVScorerDialog"
-import { OnboardingGuideDialog } from "./ModelOnboardingGuideDialog"
+import { VideoCreationDialog } from "./fake_models/ModelVideoCreationDialog"
+import { CVScorerDialog } from "./fake_models/ModelCVScorerDialog"
+import { OnboardingGuideDialog } from "./fake_models/ModelOnboardingGuideDialog"
 import { IgensiaDialog } from "./ModelIgensiaDialog"
 
 interface ConversationItem {
