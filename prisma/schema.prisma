@@ -9,7 +9,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -62,7 +62,7 @@ model Conversation {
 model Chat {
   id             String       @id @default(uuid())
   role           String
-  content        String       @db.LongText
+  content        String       @db.Text
   createdAt      DateTime     @default(now())
   conversation   Conversation @relation(fields: [conversationId], references: [id])
   conversationId String
@@ -73,7 +73,7 @@ model Chat {
 model Ticket {
   id          String   @id @default(uuid())
   subject     String
-  description String   @db.LongText
+  description String   @db.Text
   priority    Priority @default(NORMAL)
   status      Status   @default(OPEN)
   createdAt   DateTime @default(now())

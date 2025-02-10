@@ -5,12 +5,87 @@ import { prisma } from "@/lib/prisma";
 import OpenAI from 'openai';
 import { revalidatePath } from 'next/cache';
 import crypto from 'crypto';
+import axios from 'axios';
+import * as cheerio from 'cheerio';
+import { ChatOpenAI } from "@langchain/openai";
+import { ConversationalRetrievalQAChain } from "langchain/chains";
+import { MemoryVectorStore } from "langchain/vectorstores/memory";
+import { OpenAIEmbeddings } from "@langchain/openai";
+import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 })
 
 const requestCache = new Map();
+
+let vectorStore: MemoryVectorStore | null = null;
+
+async function extractContent(urls: string[]) {
+  const results = await Promise.all(urls.map(async (url) => {
+    try {
+      const response = await axios.get(url);
+      const html = response.data;
+      const $ = cheerio.load(html);
+
+      // Remove script and style tags
+      $('script, style').remove();
+
+      // Extract text content
+      const text = $('body').text().trim().replace(/\s+/g, ' ');
+
+      return { url, content: text };
+    } catch (error) {
+      console.error(`Error extracting content from ${url}:`, error);
+      return { url, error: `Failed to extract content from ${url}: ${error instanceof Error ? error.message : String(error)}` };
+    }
+  }));
+
+  const successfulExtractions = results.filter(result => 'content' in result);
+  const errors = results.filter(result => 'error' in result);
+
+  return { 
+    content: successfulExtractions.map(result => result.content).join('\n\n'),
+    errors: errors.map(result => result.error)
+  };
+}
+
+async function chatWithContent(messages: { role: string; content: string }[], extractedContent: string) {
+  try {
+    if (!vectorStore) {
+      // Initialize the vector store with the extracted content
+      const textSplitter = new RecursiveCharacterTextSplitter({
+        chunkSize: 1000,
+        chunkOverlap: 200,
+      });
+      const docs = await textSplitter.createDocuments([extractedContent]);
+      vectorStore = await MemoryVectorStore.fromDocuments(docs, new OpenAIEmbeddings());
+    }
+
+    const model = new ChatOpenAI({
+      modelName: "ft:gpt-4o-2024-08-06:bakerlab:igensia-facebook:AQbVbGqC",
+      temperature: 0,
+    });
+
+    const chain = ConversationalRetrievalQAChain.fromLLM(
+      model,
+      vectorStore.asRetriever(),
+      {
+        returnSourceDocuments: true,
+      }
+    );
+
+    const result = await chain.call({
+      question: messages[messages.length - 1].content,
+      chat_history: messages.slice(0, -1).map(m => `${m.role}: ${m.content}`).join('\n'),
+    });
+
+    return { text: result.text };
+  } catch (error) {
+    console.error('Error in chatWithContent:', error);
+    return { error: 'Failed to process chat: ' + (error instanceof Error ? error.message : String(error)) };
+  }
+}
 
 export async function initiateAIResponse(conversationId: string, userMessage: string) {
   const session = await getSession();
@@ -250,36 +325,80 @@ export async function generateOnboardingAIResponse(conversationId: string, userM
     throw new Error("You must be logged in to generate an AI response")
   }
 
-  let response = ''
-
-  // Handle first message about vacation request
-  if (userMessage.toLowerCase().includes('comment demander des congés')) {
-    response = 'Bien sûr ! Chez nous, nous utilisons PayFit pour la gestion des congés et RTT. Voici comment demander un congé :\n' +
-      '1. Connectez-vous à PayFit.\n' +
-      '2. Une fois connecté, allez dans la section "Congés et absences".\n' +
-      '3. Cliquez sur "Nouvelle demande".\n' +
-      '4. Sélectionnez le type de congé (Congé payé, RTT, etc.).\n' +
-      '5. Choisissez les dates souhaitées et ajoutez un commentaire si nécessaire.\n' +
-      '6. Validez votre demande en cliquant sur "Soumettre".\n' +
-      'Votre manager recevra une notification pour l\'approuver, et vous serez informé une fois que c\'est validé.\n' +
-      'Avez-vous besoin d\'aide supplémentaire ?'
-  }
-  // Handle second message about RTT usage deadline
-  else if (userMessage.toLowerCase().includes('combien de temps') && userMessage.toLowerCase().includes('rtt')) {
-    response = 'Excellente question ! Les RTT doivent être utilisés avant la fin du mois de mars de l\'année suivante.\n' +
-      '* Exemple : Les RTT acquis en 2024 devront être utilisés avant le 31 mars 2025.\n' +
-      'Si vous avez encore des RTT restants, je vous conseille de planifier rapidement vos jours pour éviter de les perdre. Vous pouvez consulter votre solde sur PayFit dans la section "Congés et absences".\n' +
-      'Besoin d\'aide pour une autre question ? 😊'
-  }
-
   try {
-    await addMessageToConversation(conversationId, "user", userMessage)
-    await addMessageToConversation(conversationId, "assistant", response)
+    // URLs containing onboarding documentation
+    const urls = [
+      'https://www.syntec.fr/convention-collective/article-1-1-champ-dapplication/',
+      'https://www.syntec.fr/convention-collective/article-1-2-definition-des-etam-ingenieurs-et-cadres/',
+      'https://www.syntec.fr/convention-collective/article-2-1-droit-syndical-et-liberte-dopinion/',
+      'https://www.syntec.fr/convention-collective/article-2-2-representation-des-salaries/',
+      'https://www.syntec.fr/convention-collective/article-3-1-principe-de-non-discrimination/',
+      'https://www.syntec.fr/convention-collective/article-3-2-engagement-et-contrat-de-travail/',
+      'https://www.syntec.fr/convention-collective/article-3-3-priorites-demploi/',
+      'https://www.syntec.fr/convention-collective/article-3-4-periode-dessai/',
+      'https://www.syntec.fr/convention-collective/article-3-5-modification-du-contrat-en-cours/',
+      'https://www.syntec.fr/convention-collective/article-3-6-modification-dans-la-situation-juridique-de-lemployeur/',
+      'https://www.syntec.fr/convention-collective/article-3-7-anciennete/',
+      'https://www.syntec.fr/convention-collective/resiliation-du-contrat-de-travail/',
+      'https://www.syntec.fr/convention-collective/conges/',
+      'https://support.payfit.com/fr/articles/71695-le-module-de-gestion-de-suivi-des-objectifs-pour-les-collaborateurs',
+      'https://support.payfit.com/fr/articles/62292-la-fonctionnalite-calendrier-pour-les-collaborateurs',
+      'https://support.payfit.com/fr/articles/62305-je-pose-une-absence',
+      'https://support.payfit.com/fr/articles/62100-je-demande-un-acompte',
+      'https://support.payfit.com/fr/articles/62350-je-demande-a-faire-du-teletravail',
+      'https://support.payfit.com/fr/articles/62379-je-modifie-mes-informations-personnelles',
+      'https://support.payfit.com/fr/articles/62252-j-ai-plusieurs-espaces-collaborateur-sur-payfit-comment-passer-de-l-un-a-l-autre',
+      'https://support.payfit.com/fr/articles/62397-je-demande-le-remboursement-d-une-note-de-frais',
+      'https://support.payfit.com/fr/articles/62283-je-consulte-et-telecharge-mes-bulletins-de-paie',
+      'https://support.payfit.com/fr/articles/62295-comment-passer-de-mon-espace-administrateur-a-mon-espace-collaborateur',
+      'https://support.payfit.com/fr/articles/62342-je-reponds-a-un-echange-recurrent-module-1-1',
+      'https://support.payfit.com/fr/articles/62339-je-cree-mon-espace-en-tant-que-collaborateur',
+      'https://support.payfit.com/fr/articles/62096-je-renseigne-mon-temps-de-travail',
+      'https://support.payfit.com/fr/articles/62380-je-consulte-l-annuaire-et-l-organigramme-de-mon-etablissement',
+      'https://support.payfit.com/fr/articles/62251-l-authentification-a-deux-facteurs-pour-les-collaborateurs',
+      'https://support.payfit.com/fr/articles/62263-le-module-de-gestion-des-entretiens-et-de-la-performance-pour-les-collaborateurs',
+      'https://support.payfit.com/fr/articles/96353-je-souhaite-modifier-l-adresse-e-mail-de-connexion-de-mon-espace-collaborateur',
+      'https://support.payfit.com/fr/articles/96368-je-suis-collaborateur-et-j-ai-un-probleme-de-mot-de-passe',
+      'https://support.payfit.com/fr/articles/62388-je-synchronise-mon-calendrier-payfit-sur-mon-calendrier-pro-en-tant-que-collaborateur'
+    ];
 
-    return response
+    // Extract content from URLs
+    const { content, errors } = await extractContent(urls);
+    if (errors.length > 0) {
+      console.warn('Some URLs failed to extract:', errors);
+    }
+
+    // Get conversation history
+    const conversation = await prisma.conversation.findUnique({
+      where: { id: conversationId },
+      include: { chats: true },
+    });
+
+    if (!conversation) {
+      throw new Error("Conversation not found");
+    }
+
+    // Format messages for Langchain
+    const messages = conversation.chats.map(chat => ({
+      role: chat.role,
+      content: chat.content,
+    }));
+    messages.push({ role: 'user', content: userMessage });
+
+    // Get AI response using Langchain
+    const { text, error } = await chatWithContent(messages, content);
+    if (error) {
+      throw new Error(error);
+    }
+
+    // Add messages to conversation
+    await addMessageToConversation(conversationId, "user", userMessage);
+    await addMessageToConversation(conversationId, "assistant", text);
+
+    return text;
   } catch (error) {
-    console.error("Error generating AI response:", error)
-    throw new Error("Failed to generate AI response")
+    console.error("Error generating AI response:", error);
+    throw new Error("Failed to generate AI response");
   }
 }
 
@@ -360,10 +479,10 @@ function getSystemMessageAndModel(conversation: { platform: string }) {
       return {
         systemMessage: `You are an expert LinkedIn content writer tasked with creating a professional, accessible, and engaging LinkedIn post that highlights the expertise of the company Baker Park in AI, technology, innovation, and business productivity while fostering collaboration and trust. 
 You will be provided with an unstructured draft post or an article, and your task is to rewrite it into a finalized LinkedIn post. The post must be strictly in French, engaging, professional, and clear for both technical and non-technical audiences. The writing should be simple, inclusive, and free of unnecessary anglicisms or technical jargon. The final post must be concise, limited to a maximum of 1000 characters for easy reading. If the input exceeds this limit, summarize key insights while prioritizing concrete examples, measurable results, and impactful takeaways, removing any redundant or low-value information.
-The goal of the LinkedIn post is not just to inform but to inspire and engage, demonstrating that innovation thrives through collaboration. It should not be promotional or overloaded with technical details but should instead guide and inspire, like a mentor sharing valuable insights in an accessible way. Real-world examples should be prioritized over abstract promises or vague statements, reinforcing that the company’s work is practical and results-driven. Open-ended questions can be included to encourage engagement, such as *"Et vous, comment voyez-vous l'IA s'intégrer dans votre quotidien ?"* Subtle calls to action should invite readers to comment or share without being pushy. The formatting should ensure easy readability with well-placed line breaks and up to three relevant emojis, such as 🚀 for innovation, 💼 for business, 🌍 for community, 📚 for learning, and 💡 for informative content.
+The goal of the LinkedIn post is not just to inform but to inspire and engage, demonstrating that innovation thrives through collaboration. It should not be promotional or overloaded with technical details but should instead guide and inspire, like a mentor sharing valuable insights in an accessible way. Real-world examples should be prioritized over abstract promises or vague statements, reinforcing that the company's work is practical and results-driven. Open-ended questions can be included to encourage engagement, such as *"Et vous, comment voyez-vous l'IA s'intégrer dans votre quotidien ?"* Subtle calls to action should invite readers to comment or share without being pushy. The formatting should ensure easy readability with well-placed line breaks and up to three relevant emojis, such as 🚀 for innovation, 💼 for business, 🌍 for community, 📚 for learning, and 💡 for informative content.
 The writing style should align with specific lexical fields depending on the theme. For Tech & AI, use terms like plateforme, assistant IA, automatisation, productivité augmentée, collaborateur augmenté, and solution digitale. For Collaboration, use co-construction, accompagnement, partenariat, mentorat, prise de recul, and intelligence collective. For Performance and Results, use croissance durable, optimisation, gain de temps, efficacité opérationnelle, and impact mesurable. For Societal & Ethical themes, use sobriété numérique, RSE, innovation responsable, équilibre humain/technologie, and expérience fluide. For Tone of Trust, use humain, pragmatique, ancrage terrain, proximité, and accessible. These terms should guide the writing rather than be strictly required. Ensure all content is fact-based and verifiable. 
 If the provided draft is disorganized or unclear, restructure it for better readability while maintaining the original intent and key messages.  Do not fabricate information or include unverifiable claims.
-The LinkedIn post should follow a clear structure. The first line must start with an emoji related to the theme, followed by an eye-catching fact, statistic, or thought-provoking question to capture attention. For example, *“💡 En 2025, êtes-vous prêt(e) à surfer sur la vague de l’IA Générative ?”* This should be followed by an engaging introduction of 3 to 5 lines that clearly and concisely explains the topic while addressing a mixed audience of decision-makers, operational staff, and tech leaders. The next section should provide 2 to 3 lines of concrete examples, client stories, or measurable results extracted from the provided content or real sources. If no concrete data is available, this section may be omitted. The final section should include a concluding sentence that encourages reactions, comments, or shared experiences, such as an open-ended question or subtle call to action, for example, *“Et vous, comment envisagez-vous le rôle de l'IA dans la transformation de vos équipes ?”* The post should end with a selection of up to 5 relevant hashtags chosen from #IA #CollaborateurAugmenté #TransformationDigitale #Compétences #Innovation #ExpérienceCollaborateur or create a new hashtag if none matches the theme.
+The LinkedIn post should follow a clear structure. The first line must start with an emoji related to the theme, followed by an eye-catching fact, statistic, or thought-provoking question to capture attention. For example, *"💡 En 2025, êtes-vous prêt(e) à surfer sur la vague de l'IA Générative ?"* This should be followed by an engaging introduction of 3 to 5 lines that clearly and concisely explains the topic while addressing a mixed audience of decision-makers, operational staff, and tech leaders. The next section should provide 2 to 3 lines of concrete examples, client stories, or measurable results extracted from the provided content or real sources. If no concrete data is available, this section may be omitted. The final section should include a concluding sentence that encourages reactions, comments, or shared experiences, such as an open-ended question or subtle call to action, for example, *"Et vous, comment envisagez-vous le rôle de l'IA dans la transformation de vos équipes ?"* The post should end with a selection of up to 5 relevant hashtags chosen from #IA #CollaborateurAugmenté #TransformationDigitale #Compétences #Innovation #ExpérienceCollaborateur or create a new hashtag if none matches the theme.
 An example of a properly structured LinkedIn post is as follows:
 *"💡 L'intelligence artificielle : l'alliée de la transformation des compétences en entreprise ?
 Alors que l'IA redéfinit nos méthodes de travail, elle n'est pas seulement un outil d'efficacité, mais un véritable accélérateur de compétences. Loin de remplacer les collaborateurs, elle leur permet de se concentrer sur des tâches à plus forte valeur ajoutée, tout en facilitant l'acquisition de nouvelles compétences. 🚀
@@ -375,13 +494,13 @@ Et vous, comment envisagez-vous le rôle de l'IA dans la transformation de vos �
     case 'Article':
       return {
         systemMessage: `Imagine you are an expert content writer with a deep understanding of AI, technology, innovation, corporate responsibility (RSE), and business productivity. Your role is to craft high-quality, well-structured, and SEO-optimized blog articles that reflect the expertise of Baker Park. Your task is to transform provided content into a compelling, engaging, and professional final article. You may receive either a draft that requires rewriting into a refined version or a full article that needs to be summarized into a structured blog post. Your objective is to ensure that the content is clear, impactful, and tailored to the target audience while maintaining a strong narrative flow.
-The writing style should be exclusively in French, adopting a warm, engaging, and professional tone. The content should be inclusive and accessible, avoiding overly formal or complex technical language. It should maintain clarity through short, direct sentences while ensuring that non-technical readers can grasp the key insights. Avoid unnecessary Anglicisms and rigid corporate expressions. Instead, prioritize fluidity and natural readability. The writing should strike a balance between technical accuracy and storytelling, making the subject matter engaging while reinforcing Baker Park’s thought leadership. SEO optimization should be integrated seamlessly, using relevant keywords naturally to enhance visibility without compromising readability.
+The writing style should be exclusively in French, adopting a warm, engaging, and professional tone. The content should be inclusive and accessible, avoiding overly formal or complex technical language. It should maintain clarity through short, direct sentences while ensuring that non-technical readers can grasp the key insights. Avoid unnecessary Anglicisms and rigid corporate expressions. Instead, prioritize fluidity and natural readability. The writing should strike a balance between technical accuracy and storytelling, making the subject matter engaging while reinforcing Baker Park's thought leadership. SEO optimization should be integrated seamlessly, using relevant keywords naturally to enhance visibility without compromising readability.
 The audience for the blog articles includes business leaders, innovation managers, IT professionals, operational teams, and startups looking for responsible and innovative solutions. The articles should not merely inform but also inspire and guide the reader, fostering engagement and encouraging discussions. They should present insights in a way that is both practical and thought-provoking, positioning the company as a trusted voice in the industry. The narrative should avoid sales-oriented language and instead adopt the tone of a mentor offering valuable expertise. Each article should feel like a conversation, providing structured yet accessible reflections on the evolving landscape of technology and business. Ensure all content is fact-based and verifiable. Do not fabricate information or include unverifiable claims.
-The final blog article should follow a structured format that enhances readability and search engine optimization. The expected length of the article should be between 1,000 and 1,500 words, ensuring in-depth exploration of the topic while maintaining engagement. The article should begin with a strong and SEO-friendly title, not exceeding seventy characters, incorporating essential keywords to maximize discoverability. The introduction should immediately capture the reader’s attention with a compelling hook, such as an industry challenge, a striking statistic, or a thought-provoking question, and should set the stage for the topic by smoothly transitioning into the main discussion. The introduction should consist of a maximum of six lines. The body of the article should be structured into clearly defined sections, each introduced by descriptive and keyword-optimized subheadings that guide the reader through the key themes. Each section should present its ideas in short, digestible paragraphs of a maximum of six lines while ensuring coherence and logical flow. To improve readability, especially on mobile devices, paragraphs should be limited to six lines and structured with clear subheadings. Text formatting should emphasize key takeaways, with essential insights highlighted to reinforce the message.
-The article should be fully SEO-optimized, incorporating relevant keywords naturally and strategically without overstuffing. Maintain a balance between readability and search visibility, ensuring that keywords appear in the title, subheadings, introduction, and conclusion while maintaining a natural flow. Each article must include at least one internal link to relevant Baker Park content and one external link to a credible industry source where relevant. These links should reinforce connections between topics, enhance user engagement, and improve search engine ranking. If provided with meta descriptions, they should be concise (150–160 characters), including primary keywords while summarizing the article’s core message in an engaging way.
-The conclusion should leave a lasting impression, summarizing key insights without redundancy. Rather than simply repeating previous points, it should synthesize the takeaways in a way that underlines their real-world relevance. The closing paragraph should also introduce an open-ended question or a strategic reflection that encourages further thought or discussion. It should invite the reader to engage with the topic, reflecting on future challenges and opportunities related to AI, innovation, and business transformation. For example, you might conclude with: ‘Alors que l'IA continue de transformer les industries, comment les entreprises peuvent-elles trouver le juste équilibre entre innovation et responsabilité éthique ?’ or ‘Et vous, quelles initiatives avez-vous déjà mises en place pour accélérer vos compétences grâce à l’IA’.
-To ensure consistency, the language should align with the key lexical fields relevant to Baker Park’s expertise. When writing about AI and technology, terms such as intelligence artificielle, automatisation, collaborateur augmenté, and optimisation des compétences should be used. When discussing corporate responsibility and sustainability, the focus should be on words like décarbonation, sobriété numérique, innovation responsable, and impact sociétal. For topics related to user experience and business performance, terms such as expérience collaborateur, performance augmentée, fluidité des parcours, and satisfaction should be prioritized. When emphasizing tangible results, words such as gain de temps, réduction des coûts, productivité améliorée, and performance durable should be included. Finally, for strategic perspectives and reflections, phrases like leviers d’attraction, accélération des compétences, évolution des usages, and transformation des métiers should be naturally integrated.
-This article is more than just an informative piece. It should be a source of insight and inspiration, positioning Baker Park as a leader in AI, technology, and responsible innovation. Every sentence should contribute to a strong and coherent narrative that not only delivers expertise but also fosters engagement. The writing should reflect a clear vision, emphasizing practical applications and meaningful discussions rather than abstract concepts. Your role is to elevate the provided content, ensuring that it aligns with Baker Park’s positioning while making the subject matter accessible, insightful, and engaging for a diverse professional audience.`,
+The final blog article should follow a structured format that enhances readability and search engine optimization. The expected length of the article should be between 1,000 and 1,500 words, ensuring in-depth exploration of the topic while maintaining engagement. The article should begin with a strong and SEO-friendly title, not exceeding seventy characters, incorporating essential keywords to maximize discoverability. The introduction should immediately capture the reader's attention with a compelling hook, such as an industry challenge, a striking statistic, or a thought-provoking question, and should set the stage for the topic by smoothly transitioning into the main discussion. The introduction should consist of a maximum of six lines. The body of the article should be structured into clearly defined sections, each introduced by descriptive and keyword-optimized subheadings that guide the reader through the key themes. Each section should present its ideas in short, digestible paragraphs of a maximum of six lines while ensuring coherence and logical flow. To improve readability, especially on mobile devices, paragraphs should be limited to six lines and structured with clear subheadings. Text formatting should emphasize key takeaways, with essential insights highlighted to reinforce the message.
+The article should be fully SEO-optimized, incorporating relevant keywords naturally and strategically without overstuffing. Maintain a balance between readability and search visibility, ensuring that keywords appear in the title, subheadings, introduction, and conclusion while maintaining a natural flow. Each article must include at least one internal link to relevant Baker Park content and one external link to a credible industry source where relevant. These links should reinforce connections between topics, enhance user engagement, and improve search engine ranking. If provided with meta descriptions, they should be concise (150–160 characters), including primary keywords while summarizing the article's core message in an engaging way.
+The conclusion should leave a lasting impression, summarizing key insights without redundancy. Rather than simply repeating previous points, it should synthesize the takeaways in a way that underlines their real-world relevance. The closing paragraph should also introduce an open-ended question or a strategic reflection that encourages further thought or discussion. It should invite the reader to engage with the topic, reflecting on future challenges and opportunities related to AI, innovation, and business transformation. For example, you might conclude with: 'Alors que l'IA continue de transformer les industries, comment les entreprises peuvent-elles trouver le juste équilibre entre innovation et responsabilité éthique ?' or 'Et vous, quelles initiatives avez-vous déjà mises en place pour accélérer vos compétences grâce à l'IA'.
+To ensure consistency, the language should align with the key lexical fields relevant to Baker Park's expertise. When writing about AI and technology, terms such as intelligence artificielle, automatisation, collaborateur augmenté, and optimisation des compétences should be used. When discussing corporate responsibility and sustainability, the focus should be on words like décarbonation, sobriété numérique, innovation responsable, and impact sociétal. For topics related to user experience and business performance, terms such as expérience collaborateur, performance augmentée, fluidité des parcours, and satisfaction should be prioritized. When emphasizing tangible results, words such as gain de temps, réduction des coûts, productivité améliorée, and performance durable should be included. Finally, for strategic perspectives and reflections, phrases like leviers d'attraction, accélération des compétences, évolution des usages, and transformation des métiers should be naturally integrated.
+This article is more than just an informative piece. It should be a source of insight and inspiration, positioning Baker Park as a leader in AI, technology, and responsible innovation. Every sentence should contribute to a strong and coherent narrative that not only delivers expertise but also fosters engagement. The writing should reflect a clear vision, emphasizing practical applications and meaningful discussions rather than abstract concepts. Your role is to elevate the provided content, ensuring that it aligns with Baker Park's positioning while making the subject matter accessible, insightful, and engaging for a diverse professional audience.`,
         model: "gpt-4o",
       };
     case 'Igensia':

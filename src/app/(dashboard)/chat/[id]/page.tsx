@@ -1,5 +1,6 @@
 import { getConversation } from '@/action/chat'
 import ChatInterface from '@/components/ChatInterface'
+import ChatInterfaceOnboarding from '@/components/ChatInterfaceOnboarding'
 
 export async function generateMetadata({ params }: { params: { id: string } }) {
   // You can add metadata generation logic here if needed
@@ -18,11 +19,20 @@ export default async function ChatPage({ params }: { params: { id: string } }) {
 
   return (
     <div className="flex flex-col h-full">
-      <ChatInterface 
-        initialMessages={initialMessages} 
-        brand={conversation.organisation} 
-        conversationId={id}
-      />
+      {conversation.platform === 'Onboarding' ? (
+        <ChatInterfaceOnboarding 
+          initialMessages={initialMessages} 
+          brand={conversation.organisation} 
+          conversationId={id}
+        />
+      ) : (
+        <ChatInterface 
+          initialMessages={initialMessages} 
+          brand={conversation.organisation} 
+          conversationId={id}
+        />
+      )}
     </div>
+
   )
 }
